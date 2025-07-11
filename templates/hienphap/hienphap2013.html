@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hien phap nam 2013</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+    <script src="/static/js/api_nghidinhh.js"></script>
+    <script src="/static/js/chuyentrang.js"></script>
+    <script src="/static/js/api_goiytimkiem.js"></script>
+    <script src="/static/js/api_ketquatimkiem.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const fileCode = /HS02/.test(window.location.pathname) ? "HS02" : "HS08";
+            loadData(fileCode);
+        });
+    </script>
+</head>
+<body class="bg-white">
+    {% include "pages/header/header.html" %}
+    <main class="container mx-auto py-6 px-6">
+        <div class="flex items-center space-x-2 text-gray-600 text-sm" >
+            <a class="hover:underline" href=""> Văn bản pháp luật </a>
+            <span> / </span>
+            <a class="hover:underline" href=""> Hành chính </a>
+        </div>
+        <div class="flex">
+            <div class="mt-6">
+                <div class="flex items-center">
+                    <input id="searchInput" class="border border-gray-300 rounded-l px-4 py-2" style="width: 600px;" placeholder="Tìm kiếm văn bản..." type="text"  onkeydown="handleKeyPress(event)"/>
+                    <button class="bg-red-600 text-white px-4 py-2 rounded-r" onclick="searchDocuments()">Tìm kiếm</button>
+                    <script>
+                        function searchDocuments() {
+                            const searchInput = document.getElementById("searchInput").value.trim();
+                            if (searchInput.length > 0) {
+                                window.location.href = `/tracuu?titles=${encodeURIComponent(searchInput)}`;
+                            }
+                        }
+                        function handleKeyPress(event) {
+                            if (event.key === "Enter") {
+                                searchDocuments(); 
+                            }
+                        }
+                    </script>
+                    <button class="ml-2 text-gray-600"><i class="fas fa-cogs"> </i>Tìm năng cao</button>
+                </div>
+                <div id="dropdownResult" class="max-w-4xl mx-auto p-4 hidden bg-white shadow-md rounded mt-2 w-[600px] z-10">
+                    <div class="flex items-center border-b border-gray-300 pb-2 mb-4">
+                        <div class="text-red-500 font-bold mr-4 cursor-pointer">Văn bản</div>
+                        <div id="closeDropdown" class="ml-auto text-gray-500 cursor-pointer"><i class="fas fa-times"></i></div>
+                    </div>
+                    <div id="dropdownContent" class="space-y-4">
+                        <div class="flex items-start">
+                            <!-- noi dung goi y tim kiem -->
+                        </div>
+                    </div>
+                </div>
+                <h1 class="text-2xl font-bold mt-2 data-title"> </h1>
+                <!-- click để chuyển trang -->
+                <div class="contain_button bg-gray p-1 mt-4 pl-4 shadow rounded w-[850px] h-[70px]">
+                    <div class="flex space-x-4 mt-2">
+                        <button class="bg-gray-200 text-gray-800 px-4 py-2 rounded item" data-target="page_two">Tóm tắt</button>
+                        <button class="bg-blue-500 text-white rounded px-2   item active_item"  data-target="page_first">Nội dung</button>
+                        <button class="bg-gray-200 text-gray-800 px-2 rounded item">VB gốc</button>
+                        <button class="bg-gray-200 text-gray-800 px-2  rounded item"     data-target="page_three">Tiếng Anh</button>
+                        <button class="bg-gray-200 text-gray-800 px-2 rounded item">Hiệu lực</button>
+                        <button class="bg-gray-200 text-gray-800  rounded item">VB liên quan</button>
+                        <button class="bg-gray-200 text-gray-800   rounded item">Lược đồ</button>
+                        <button class="bg-gray-200 text-gray-800  rounded item">Nội dung MIX</button>
+                        <button class="bg-gray-200 text-gray-800 px-1  rounded item" data-target="page_four">Tải về</button>
+                    </div>
+                </div>
+
+                 <!-- page_first (Trang Noi Dung) -->
+                 {% include "pages/pagefirst/noidung.html" %}
+                 <!-- page_two (Trang Tóm Tắt) -->
+                 {% include "pages/pagetwo/tomtat.html" %}
+                 <!-- page_three (Trang Tieng Anh) -->
+                 {% include "pages/pagethree/tienganh.html" %}
+                 <!-- page_four (Trang Tai Ve) -->
+                 {% include "pages/pagefour/taive.html" %}
+                 <!-- ------------------------ -->
+            </div>
+            <!-- (Trang side_right) -->
+           
+            <!-- ----------------- -->
+        </div>
+    </main>
+</body>
+</html>
+
+    

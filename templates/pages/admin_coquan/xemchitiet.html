@@ -1,0 +1,21 @@
+<!-- Lớp mờ nền -->
+<div class="overlay" id="overlay"></div>
+<!-- Dropdown chi tiết cơ quan  -->
+<div class="dropdown-menu p-4 rounded-4 shadow" id="viewDropdown" style="min-width: 320px; background: linear-gradient(135deg, #f0f4f8, #d9e2ec); border: none;">
+    <div class="p-3 rounded-4" style="background: white; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);">
+        <h5 class="mb-4 text-center text-primary fw-bold" style="font-family: 'Poppins', sans-serif;">Chi tiết cơ quan</h5>
+        <div class="mb-2 d-flex align-items-center">
+            <p class="mb-0 text-secondary" style="font-size: 0.9rem; min-width: 80px;"><b>Mã cơ quan:</b></p>
+            <span id="viewOranId" class="d-block text-dark fw-semibold  ml-2" style="font-size: 1rem;"></span>
+        </div>
+        <div class="mb-2 d-flex align-items-center">
+            <p class="mb-0 text-secondary" style="font-size: 0.9rem; min-width: 80px"><b>Tên cơ quan:</b></p>
+            <span id="vieworanname" class="d-block text-dark fw-semibold ml-2" style="font-size: 1rem;"></span>
+        </div>
+        <div class="text-center">
+            <button class="btn btn-primary rounded-pill px-4 py-2 fw-bold" id="closeDropdown" style="transition: 0.3s;">
+                <i class="bi bi-x-circle me-2"></i> Đóng
+            </button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,54 @@
+<div class="relative">
+    <input type="text" id="selectLoaiVanBan" placeholder="Loại văn bản"
+        class="border border-gray-300 rounded px-3 py-2 w-full cursor-pointer appearance-none bg-white focus:outline-none placeholder:text-black font-normal" readonly>
+    <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">▼</div>
+    <div id="dropdownLoaiVanBan" class="absolute w-64 hidden z-10 bg-white">
+        <input id="searchLoaiVanBan" type="text" placeholder="Tìm kiếm loại văn bản..." class="w-full px-4 py-2 border border-gray-300 rounded">
+        <div class="absolute w-full mt-1 bg-white border border-gray-300 rounded shadow-lg max-h-60 overflow-y-auto mt-[-1px]">
+            <ul id="listLoaiVanBan" class="py-1">
+                <!-- Dữ liệu sẽ được thêm động bằng JavaScript -->
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- tim theo loai van ban -->
+<script>
+    document.addEventListener("DOMContentLoaded", async () => {
+        const data = await (await fetch("/api/thuoctinhvanban")).json();
+        const list = document.getElementById("listLoaiVanBan");
+        const input = document.getElementById("searchLoaiVanBan");
+        const render = (d) => list.innerHTML = `<li class="px-4 py-2 hover:bg-gray-100 cursor-pointer" data-value="all">Tất cả</li>` +
+            d.type_documents.map(i => 
+                `<li class="px-4 py-2 hover:bg-gray-100 cursor-pointer" data-value="${i.typename}">${i.typename}</li>`
+            ).join('');
+            list.addEventListener('click', function (e) {
+                if (e.target && e.target.matches("li[data-value]")) {
+                    const value = e.target.getAttribute("data-value");
+                    window.location.href = `/tracuu?typename=${encodeURIComponent(value)}`;
+                }
+            });
+        render(data);
+        input.addEventListener("input", () => render({ type_documents: data.type_documents.filter(i => i.typename.toLowerCase().includes(input.value.toLowerCase().trim())) }));
+
+        const select = document.getElementById("selectLoaiVanBan");
+        const dropdown = document.getElementById("dropdownLoaiVanBan");
+        select.addEventListener("click", (event) => {
+            dropdown.style.top = select.offsetTop + select.offsetHeight + "px";
+            dropdown.style.left = select.offsetLeft + "px";
+            dropdown.classList.toggle("hidden");
+        });
+        document.addEventListener("click", (event) => {
+            if (!select.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.classList.add("hidden");
+            }
+        });
+        dropdown.querySelectorAll("li").forEach((item) => {
+            item.addEventListener("click", () => {
+                select.innerHTML = `<option>${item.textContent}</option>`;
+                dropdown.classList.add("hidden");
+            });
+        });
+    
+    });
+</script>

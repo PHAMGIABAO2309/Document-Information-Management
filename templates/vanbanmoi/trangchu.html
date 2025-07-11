@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang chủ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <script src="/static/js/api_goiytimkiem.js"></script>
+</head>
+<body class="bg-white-100">
+    {% include "pages/header/header.html" %}
+
+    <main class="max-w-screen-lg mx-auto py-8 px-4">
+        <div class="flex items-center space-x-2 text-gray-600 text-sm mb-4">
+            <a class="hover:underline flex items-center space-x-1" href="javascript:void(0);" onclick="window.location.href='/trangchu'">
+                <i class="fas fa-home"></i>
+                <span>Văn bản mới</span>
+            </a>
+            <span>/</span>
+        </div>
+
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">Văn bản Mới - Văn bản pháp luật mới ban hành</h1>
+
+        <div class="bg-white shadow-md rounded-2xl p-4 mb-6">
+            <div class="flex flex-col space-y-4">
+                <!-- tim kiem tieu de -->
+                {% include "timkiem/tieude.html" %}
+            </div>
+        </div>
+
+        <h6 class="sum-index mb-2">
+            <!-- hiện tổng văn bản -->
+        </h6>
+
+        <!-- Dropdown gợi ý -->
+        {% include "timkiem/goi_y_tieude.html" %}
+
+        <div class="bg-white p-6 shadow-md rounded-2xl h-[500px] overflow-y-auto">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-x-4">
+                    <label class="font-semibold text-gray-700">Bộ lọc:</label>
+                    {% include "timkiem/linhvuctracuu.html" %}
+                    {% include "timkiem/nambanhanh.html" %}
+                    {% include "timkiem/loaivanban.html" %}
+                    {% include "timkiem/coquanbanhanh.html" %}
+                </div>
+            </div>
+            <hr class="mb-4">
+
+            <div class="flex justify-between items-center mb-4">
+                <div class="flex space-x-2">
+                    <button class="border border-gray-300 p-2 rounded hover:bg-gray-100">
+                        <i class="fas fa-th"></i>
+                    </button>
+                    <button class="border border-gray-300 p-2 rounded hover:bg-gray-100">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+                <div class="flex items-center space-x-2 text-gray-700 text-sm">
+                    <span>Sắp xếp theo:</span>
+                    <select class="border border-gray-300 rounded p-1 focus:outline-none">
+                        <option>Mới ban hành</option>
+                        <option>Mới cập nhật</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="listContainer" class="space-y-4">
+                <div class="file-item flex border-t border-gray-300 pt-4 hidden template">
+                    <div class="flex justify-between w-full">
+                        <div class="flex space-x-3 w-3/4">
+                            <span class="index font-bold text-gray-700">
+                                <!-- số thứ tự văn bản -->
+                            </span>
+                            <div>
+                                <p class="title-text text-gray-800 font-bold cursor-pointer hover:text-orange-600 flex items-center">
+                                    <span class="title"></span>
+                                </p>
+                                <div class="flex flex-wrap gap-x-4 text-gray-600 mt-2 text-sm">
+                                    <a href="#" class="hover:underline">Tóm tắt</a>
+                                    <a href="#" class="hover:underline">VB liên quan</a>
+                                    <a href="#" class="hover:underline">Hiệu lực</a>
+                                    <a href="#" class="hover:underline">Lược đồ</a>
+                                    <a class="tienganh hover:underline">Tiếng Anh</a>
+                                    <a class="download hover:underline" download>Tải về</a>
+                                    <a href="" class="path attachment flex items-center ml-2 text-gray-500 hover:text-blue-600 cursor-pointer hover:underline">
+                                        <i class="fas fa-paperclip mr-1"></i>
+                                        File đính kèm
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col text-sm text-gray-600 space-y-1 w-1/4">
+                            <div class="flex justify-between">
+                                <span class="w-24">Ban hành:</span>
+                                <span class="start-date text-orange-500"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="w-24">Áp dụng:</span>
+                                <span class="text-orange-500">Đã biết</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="w-24">Hiệu lực:</span>
+                                <span class="text-orange-500">Đã biết</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="w-24">Cập nhật:</span>
+                                <span class="update-date text-orange-500"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</body>
+
+</html>
+<script src="/static/js/api_TrangChuu.js"></script>
+
+
+
+
+

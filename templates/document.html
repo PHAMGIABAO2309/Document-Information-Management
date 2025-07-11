@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ document.title }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+</head>
+<body class="bg-white">
+    {% include "pages/header/header.html" %}
+    <main class="container mx-auto py-6 px-6">
+        <div class="flex items-center space-x-2 text-gray-600 text-sm" >
+            <a class="hover:underline" href=""> Văn bản pháp luật </a>
+            <span> / </span>
+            <a class="hover:underline" href=""> Hành chính </a>
+        </div>
+        <div class="flex">
+            <div class="mt-6">
+                <div class="flex items-center">
+                    <input id="searchInput" class="border border-gray-300 rounded-l px-4 py-2" style="width: 600px;" placeholder="Tìm kiếm văn bản..." type="text"  onkeydown="handleKeyPress(event)"/>
+                    <button class="bg-red-600 text-white px-4 py-2 rounded-r" onclick="searchDocuments()">Tìm kiếm</button>
+                    <script>
+                        function searchDocuments() {
+                            const searchInput = document.getElementById("searchInput").value.trim();
+                            if (searchInput.length > 0) {
+                                window.location.href = `/tracuu?titles=${encodeURIComponent(searchInput)}`;
+                            }
+                        }
+                        function handleKeyPress(event) {
+                            if (event.key === "Enter") {
+                                searchDocuments(); 
+                            }
+                        }
+                    </script>
+                    <button class="ml-2 text-gray-600"><i class="fas fa-cogs"> </i>Tìm năng cao</button>
+                </div>
+                <div id="dropdownResult" class="max-w-4xl mx-auto p-4 hidden bg-white shadow-md rounded mt-2 w-[600px] z-10">
+                    <div class="flex items-center border-b border-gray-300 pb-2 mb-4">
+                        <div class="text-red-500 font-bold mr-4 cursor-pointer">Văn bản</div>
+                        <div id="closeDropdown" class="ml-auto text-gray-500 cursor-pointer"><i class="fas fa-times"></i></div>
+                    </div>
+                    <div id="dropdownContent" class="space-y-4">
+                        <div class="flex items-start">
+                            <!-- noi dung goi y tim kiem -->
+                        </div>
+                    </div>
+                </div>
+                <h1 class="text-2xl font-bold mt-2 data-title"> </h1>
+                <!-- click để chuyển trang -->
+                <div class="contain_button bg-gray p-1 mt-4 pl-4 shadow rounded w-[850px] h-[70px]">
+                    <div class="flex space-x-4 mt-2">
+                        <button class="bg-gray-200 text-gray-800 px-4 py-2 rounded item" data-target="page_two">Tóm tắt</button>
+                        <button class="bg-blue-500 text-white rounded px-2   item active_item"  data-target="page_first">Nội dung</button>
+                        <button class="bg-gray-200 text-gray-800 px-2 rounded item" data-target="page_six">VB gốc</button>
+                        <button class="bg-gray-200 text-gray-800 px-2  rounded item"     data-target="page_three">Tiếng Anh</button>
+                        <button class="bg-gray-200 text-gray-800 px-2 rounded item">Hiệu lực</button>
+                        <button class="bg-gray-200 text-gray-800  rounded item">VB liên quan</button>
+                        <button class="bg-gray-200 text-gray-800   rounded item">Lược đồ</button>
+                        <button class="bg-gray-200 text-gray-800  rounded item">Nội dung MIX</button>
+                        <button class="bg-gray-200 text-gray-800 px-1  rounded item" data-target="page_four">Tải về</button>
+                    </div>
+                </div>
+
+                 <!-- page_first (Trang Noi Dung) -->
+                 {% include "pages/pagefirst/noidung.html" %}
+                 <!-- page_two (Trang Tóm Tắt) -->
+                 {% include "pages/pagetwo/tomtat.html" %}
+                 <!-- page_three (Trang Tieng Anh) -->
+                 {% include "pages/pagethree/tienganh.html" %}
+                 <!-- page_four (Trang Tai Ve) -->
+                 {% include "pages/pagefour/taive.html" %}
+                 <!-- page_five (Trang Lược Đồ) -->
+                 {% include "pages/pagefive/luocdo.html" %}
+                 <!-- page_six (Trang Văn Bản Gốc) -->
+                 {% include "pages/pagesix/vbgoc.html" %}
+                 <!-- ------------------------ -->
+            </div>
+            <!-- (Trang side_right) -->
+           
+            <!-- ----------------- -->
+        </div>
+    </main>
+</body>
+</html> 
+<script>
+    async function loadData(fileCode) {
+function formatDate(isoDate, isNoiDung = false) {
+    if (!isoDate || isoDate === "N/A") return "Đang cập nhật";
+    let [year, month, day] = isoDate.split("-");
+    return isNoiDung ? ` ngày ${day} tháng ${month} năm ${year}` : ` ${day}/${month}/${year}`;
+}
+try {
+    // Fetch dữ liệu từ cả hai API
+    const [responseDoc, responseSummary] = await Promise.all([
+        fetch(`/api/document?file_code=${fileCode}`),
+        fetch(`/api/tomtat?file_code=${fileCode}`)
+    ]);
+    
+    // Lấy dữ liệu từ response
+    const [documents, summaries] = await Promise.all([responseDoc.json(), responseSummary.json()]);
+    
+    // Xử lý dữ liệu từ API /api/document
+    if (documents.length) {
+        let doc = documents[0];
+        document.querySelectorAll(".data-code-number").forEach(el => {
+            el.textContent = formatDate(doc.CodeNumber, true);
+        });
+        document.querySelectorAll(".data-file-catalog").forEach(el => {
+            el.textContent = doc.FileCatalog;
+        });
+        document.querySelectorAll(".data-start-date").forEach(el => {
+            el.textContent = formatDate(doc.StartDate, true);
+        });
+        document.querySelectorAll(".data-start-date-eng").forEach(el => {
+            const formattedDate = new Date(doc.StartDate);
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const dateString = new Intl.DateTimeFormat('en-US', options).format(formattedDate);
+            el.textContent = dateString;
+        });
+        document.querySelectorAll(".data-receives").forEach(el => {
+            el.textContent = doc.Receives;
+        });
+        document.querySelectorAll(".data-subject").forEach(el => {
+            el.textContent = doc.Subject;
+        });
+        document.querySelectorAll(".data-subject-eng").forEach(el => {
+            el.textContent = doc.SubjectEN;
+        });
+       
+        document.querySelectorAll(".data-title").forEach(el => {
+            el.textContent = doc.Title;
+        });
+        document.querySelectorAll(".data-file-nonation").forEach(el => {
+            el.textContent = "Nghị định " + doc.FileNoNation;
+        });
+        document.querySelectorAll(".data-file-nonation-eng").forEach(el => {
+            el.textContent = "Decree " + doc.FileNoNation;
+        });
+    }
+
+    // Xử lý dữ liệu từ API /api/tomtat
+    if (summaries.length) {
+        let summary = summaries[0];
+        document.querySelectorAll(".title").forEach(el => {
+            el.textContent = summary.Title;
+        });
+        document.querySelectorAll(".chinhphu").forEach(el => {
+            el.textContent = summary.OranName;
+        });
+        document.querySelectorAll(".sohieu").forEach(el => {
+            el.textContent = summary.FileNoNation;
+        });
+        document.querySelectorAll(".loaivanban").forEach(el => {
+            el.textContent = summary.TypeName;
+        });
+        document.querySelectorAll(".nguoiky").forEach(el => {
+            el.textContent = summary.SingerInfo;
+        });
+        document.querySelectorAll(".linhvuc").forEach(el => {
+            el.textContent = summary.FieldName;
+        });
+        document.querySelectorAll(".ngaybanhanh").forEach(el => {
+            el.textContent = formatDate(summary.StartDate);
+        });
+        document.querySelectorAll(".ngayhethieuluc").forEach(el => {
+            el.textContent = formatDate(summary.EndDate);
+        });
+    }
+} catch (error) {
+    console.error("Lỗi fetch hoặc xử lý dữ liệu:", error);
+    document.querySelector("tbody").innerHTML = `<tr><td colspan="6" class="text-center py-4 text-red-500">Lỗi tải dữ liệu</td></tr>`;
+}
+}
+
+    // Gọi hàm loadData với mã file_code cụ thể
+    const fileCode = "{{ document.file_code }}"; // Thay thế bằng mã file_code thực tế
+    loadData(fileCode);
+</script>
+
+
+<script src="/static/js/chuyentrang.js"></script>
+<script src="/static/js/api_GoiYTimKiem.js"></script>
+<script src="/static/js/api_ketquatimkiem.js"></script>

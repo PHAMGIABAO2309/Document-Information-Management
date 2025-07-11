@@ -1,0 +1,128 @@
+<div class="sidebar">
+    <h4 class=" text-center py-3" style="color: black;">📂 Admin Panel</h4>
+    <a href="/admin" style="color: black;"><i class="bi bi-house-door-fill"></i> Trang chính</a>
+    <a href="/ocr/quanlyvanban" style="color: black;"><i class="bi bi-people-fill" style="color: black;"></i>Quản lý văn bản OCR</a>
+    <a href="/admin_vbden" style="color: black;"><i class="bi bi-file-earmark-text-fill" style="color: black;"></i> Quản lý văn bản đến</a>
+     <a href="/adminn" style="color: black;"><i class="bi bi-file-earmark-text-fill" style="color: black;"></i> Quản lý văn bản đi</a>
+    <a href="/admin_coquan" style="color: black;"><i class="bi bi-building" style="color: black;"></i> Quản lý cơ quan</a>
+    <a href="/admin_loaivanban" style="color: black;"><i class="bi bi-tags-fill" style="color: black;"></i> Quản lý loại văn bản</a>
+    <a href="/admin_nguoidung" style="color: black;"><i class="bi bi-people-fill" style="color: black;"></i>Quản lý tài khoản</a>
+    
+    <!-- <a href="#"><i class="bi bi-shield-lock-fill"></i>Phân quyền</a> -->
+    <a href="/admin_thongke" style="color: black;"><i class="bi bi-bar-chart-fill " style="color: black;"></i>Thống kê</a>
+    <a href="/trangchu" style="color: black;"><i class="bi bi-journal-richtext" style="color: black;"></i> Trang Hệ thống văn bản</a>
+    <a href="#" id="logout-link" style="color: black;"><i class="bi bi-box-arrow-right" style="color: black;"></i>Đăng xuất</a>
+</div>
+<script>
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user) window.location.href = '/login';
+    if (user.id !== 'Admin') {
+        window.location.href = '/trangchu'; // nếu không phải admin thì về trang chủ
+    }
+
+    const logoutLink = document.getElementById('logout-link');
+    logoutLink.addEventListener('click', (e) => {
+        e.preventDefault(); // chặn nhảy link ngay lập tức
+
+        Swal.fire({
+            title: 'Bạn có chắc chắn muốn đăng xuất?',
+            text: "Hành động này sẽ đăng xuất khỏi hệ thống.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Đăng xuất',
+            cancelButtonText: 'Hủy'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                localStorage.removeItem('user'); // xóa user
+                Swal.fire({
+                    title: 'Đã đăng xuất!',
+                    icon: 'success',
+                    timer: 1500,
+                    showConfirmButton: false
+                }).then(() => {
+                    window.location.href = '/login'; // chuyển trang
+                });
+            }
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const links = document.querySelectorAll('.sidebar a');
+        const activeLink = localStorage.getItem('activeLink');
+        if (activeLink) {
+            links.forEach(link => {
+                if (link.getAttribute('href') === activeLink) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        links.forEach(link => {
+            link.addEventListener('click', function() {
+                links.forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+                localStorage.setItem('activeLink', this.getAttribute('href'));
+            });
+        });
+    });
+</script>
+<style>
+    .sidebar a.active {
+        background-color: #007bff; 
+        color: white;
+    }
+    .sidebar a {
+        display: block;
+        padding: 10px;
+        text-decoration: none;
+        color: white;
+    }
+    .sidebar a:hover {
+        background-color: #0056b3; 
+    }
+ 
+body {
+  background-color: #f1f3f5;
+  font-family: 'Arial', sans-serif;
+  font-weight: bold;
+  font-size: 18px;
+  color: #212529; /* màu chữ đậm, dễ đọc trên nền sáng */
+}
+
+.sidebar {
+  height: 100vh;
+  position: fixed;
+  width: 250px;
+  font-weight: bold;
+  background-color: #b4b1b1;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  color: #1a1a1a; /* màu chữ đậm hơn trên nền xám */
+}
+
+.sidebar h4 {
+  border-bottom: 1px solid #495057;
+  /* Tiêu đề sidebar rõ ràng hơn */
+}
+
+.sidebar a {
+  color: #1a1a1a; /* màu chữ đậm hơn để nổi bật */
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.sidebar a:hover {
+  background-color: #343a40; /* màu tối hơn để làm nền hover */
+  color: #ffffff; /* chữ trắng để nổi bật khi hover */
+  cursor: pointer;
+}
+
+    .sidebar i {  margin-right: 10px;}
+</style>
+

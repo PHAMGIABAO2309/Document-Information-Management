@@ -1,0 +1,82 @@
+
+<div class="change page hidden" id="page_four">
+    <div class="bg-gray p-1 mt-4 pl-4 shadow rounded w-[850px] h-[70px]">
+        <div class="flex space-x-2 mt-2">
+            <button class="bg-red-600 text-white px-4 py-2 rounded     item">VB Song ngữ</button>
+            <button class="bg-gray-200 text-gray-800 px-4 py-2 rounded item">Tải VB</button>
+            <button class="bg-gray-200 text-gray-800 px-4 py-2 rounded item"> Lưu</button>
+            <button class="bg-gray-200 text-gray-800 px-4 py-2 rounded item"> Theo dõi VB</button>
+            <button class="bg-gray-200 text-gray-800 px-4 py-2 rounded item"> Báo lỗi</button>
+        </div>
+    </div>
+    <div class="bg-white p-4 mt-4 shadow rounded w-[850px] h-[250px]">
+        <div class="flex flex-col md:flex-row justify-between ">
+            <!-- Tiếng Việt -->
+            <div class="w-full md:w-1/2 p-4">
+              <h2 class="font-bold text-lg mb-4">VĂN BẢN TIẾNG VIỆT</h2>
+              <div class="flex items-center mb-2 p-2 rounded">
+                <img alt="DOCX icon" class="w-8 h-8 min-w-8 mr-2" src="/static/images/docx.png" />
+                <a id="downloadBtn" class="text-blue-600 hover:text-red-500" href="#">
+                    <span class="data-file-nonation"></span> <span>DOC (Bản Word)</span>
+                </a>                
+                  <script>
+                    document.getElementById("downloadBtn").addEventListener("click", async function () {
+                      try {
+                        // Gọi server để lấy nội dung file HTML
+                        const htmlResponse = await fetch("/get-html-content");
+                        const content = await htmlResponse.text();
+                  
+                        // Gửi nội dung đến server để tạo DOCX
+                        const response = await fetch("/generate-pdf", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ html: content })
+                        });
+                  
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement("a");
+                        a.href = url;
+                        a.download = "nghi-dinh.pdf"; // không phải .docx
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                      } catch (err) {
+                        alert("Có lỗi xảy ra khi tải file.");
+                        console.error(err);
+                      }
+                    });
+                  </script>
+                  
+              </div>
+              <div class="flex items-center mb-2 p-2 rounded">
+                <img alt="PDF icon" class="w-8 h-8 min-w-8 mr-2" src="/static/images/pdf.png" />
+                <a class="text-blue-600 hover:text-red-500" href="#" download>
+                 <span class="data-file-nonation"></span> <span>PDF (Bản Pdf)</span>
+                </a>
+              </div>
+            </div>
+          
+            <!-- Tiếng Anh -->
+            <div class="w-full md:w-1/2 p-4">
+              <h2 class="font-bold text-lg mb-4">VĂN BẢN TIẾNG ANH</h2>
+              <div class="flex items-center mb-2 p-2 rounded">
+                <img alt="DOCX icon" class="w-8 h-8 min-w-8 mr-2" src="/static/images/docx.png" />
+                <a class="text-blue-600 hover:text-red-500" href="#" download>
+                  <span class="data-file-nonation-eng"></span>  <span>DOC (Word)</span>
+                </a>
+              </div>
+              <div class="flex items-center mb-2 p-2 rounded">
+                <img alt="PDF icon" class="w-8 h-8 min-w-8 mr-2" src="/static/images/pdf.png" />
+                <a class="text-blue-600 hover:text-red-500" href="#" download>
+                  <span class="data-file-nonation-eng"></span> <span>PDF (Bản Pdf)</span> 
+                </a>
+              </div>
+            </div>
+        </div>
+        <p class="text-sm mt-4">
+        * Lưu ý: Để đọc được văn bản tải trên kholuutruvanban, bạn cần cài phần mềm đọc file DOC, DOCX và phần mềm đọc file PDF.
+        </p>
+    </div>
+     
+</div>

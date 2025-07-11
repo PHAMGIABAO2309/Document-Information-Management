@@ -1,0 +1,167 @@
+ <div class="overlay_update" id="formOverlay_update"></div>
+<form class="dropdown-update p-4 rounded-4 shadow" id="addDocumentForm_update" style="min-width: 320px; background: linear-gradient(135deg, #f0f4f8, #d9e2ec); border: none; display: none;">
+    <div class="p-3 rounded-4" style="background: white; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);">
+        <button type="button" class="btn-close position-absolute top-0 end-0 m-3" id="closeFormBtn_update" aria-label="Close"></button>
+        <h5 class="mb-4 text-center text-primary fw-bold" style="font-family: 'Poppins', sans-serif;">Cập nhật văn bản</h5>
+
+        <div class="mb-2 d-flex align-items-center">
+          <p class="mb-0 text-secondary" style="font-size: 0.9rem; min-width: 80px;"><b>Mã văn bản:</b></p>
+          <input id="xemFileCode" class="form-control form-control-sm ms-2 bg-gray-200" readonly />
+        </div>
+
+        <div class="mb-2 d-flex align-items-center hidden">
+          <p class="mb-0 text-secondary" style="font-size: 0.9rem; min-width: 80px;"><b>Mã thong tin van ban:</b></p>
+          <input id="xemInfoId" class="form-control form-control-sm ms-2 bg-gray-200" readonly />
+        </div>
+
+        <div class="mb-2 d-flex align-items-center">
+          <p class="mb-0 text-secondary" style="font-size: 0.9rem; min-width: 80px"><b>Tên văn bản:</b></p>
+          <input id="xemTitle" class="form-control form-control-sm ms-2" />
+        </div>
+
+        <div class="mb-2 d-flex align-items-center">
+          <p class="mb-0 text-secondary" style="font-size: 0.9rem; min-width: 80px"><b>Ngày ban hành:</b></p>
+          <input type="date" id="xemStartDate" class="form-control form-control-sm ms-2" />
+        </div>
+
+        <div class="mb-2 d-flex align-items-center">
+          <p class="mb-0 text-secondary" style="font-size: 0.9rem; min-width: 80px"><b>Ngày cập nhật:</b></p>
+          <input type="date" id="xemUpdateDate" class="form-control form-control-sm ms-2" />
+        </div>
+
+        <div class="mb-2 d-flex align-items-center">
+          <p class="mb-0 text-secondary" style="font-size: 0.9rem; min-width: 80px"><b>Số và ký hiệu văn bản:</b></p>
+          <input type="text" id="xemFileNoNation" class="form-control form-control-sm ms-2" />
+        </div>
+
+        <div class="mb-2 d-flex align-items-center">
+            <p class="mb-0 text-secondary" style="font-size: 0.9rem; min-width: 80px"><b>Loại văn bản</b></p>
+            <select id="typenameSelect" class="ms-2 w-48 px-4 py-2 border border-gray-300 rounded-xl shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all duration-300">
+                <option value="">Chọn loại văn bản</option>
+            </select>
+        </div>
+
+        <div class="mb-2 d-flex align-items-center">
+            <p class="mb-0 text-secondary" style="font-size: 0.9rem; min-width: 80px"><b>Cơ quan ban hành:</b></p>
+            <select id="orannameSelect" class="ms-2 w-48 px-4 py-2 border border-gray-300 rounded-xl shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all duration-300">
+                <option value="">Chọn cơ quan ban hành</option>
+            </select>
+        </div>
+        
+        <div class="mb-2 d-flex align-items-center">
+          <p class="mb-0 text-secondary" style="font-size: 0.9rem; min-width: 80px"><b>Nơi ban hành văn bản:</b></p>
+          <select id="receivesSelect" class="ms-2 w-48 px-4 py-2 border border-gray-300 rounded-xl shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all duration-300">
+              <option value="">Chọn nơi ban hành văn bản</option>
+              <option value="Hà Nội">Hà Nội</option>
+              <option value="TP.Hồ Chí Minh">TP. Hồ Chí Minh</option>
+              <option value="Hải Phòng">Hải Phòng</option>
+              <option value="Đà Nẵng">Đà Nẵng</option>
+              <option value="Cần Thơ">Cần Thơ</option>
+              <option value="An Giang">An Giang</option>
+              <option value="Bà Rịa - Vũng Tàu">Bà Rịa - Vũng Tàu</option>
+              <option value="Bạc Liêu">Bạc Liêu</option>
+              <option value="Bắc Giang">Bắc Giang</option>
+              <option value="Bắc Kạn">Bắc Kạn</option>
+              <option value="Bắc Ninh">Bắc Ninh</option>
+              <option value="Bến Tre">Bến Tre</option>
+              <option value="Bình Dương">Bình Dương</option>
+              <option value="Bình Định">Bình Định</option>
+              <option value="Bình Phước">Bình Phước</option>
+              <option value="Bình Thuận">Bình Thuận</option>
+              <option value="Cà Mau">Cà Mau</option>
+              <option value="Cao Bằng">Cao Bằng</option>
+              <option value="Đắk Lắk">Đắk Lắk</option>
+              <option value="Đắk Nông">Đắk Nông</option>
+              <option value="Điện Biên">Điện Biên</option>
+              <option value="Đồng Nai">Đồng Nai</option>
+              <option value="Đồng Tháp">Đồng Tháp</option>
+              <option value="Gia Lai">Gia Lai</option>
+              <option value="Hà Giang">Hà Giang</option>
+              <option value="Hà Nam">Hà Nam</option>
+              <option value="Hà Tĩnh">Hà Tĩnh</option>
+              <option value="Hải Dương">Hải Dương</option>
+              <option value="Hậu Giang">Hậu Giang</option>
+              <option value="Hòa Bình">Hòa Bình</option>
+              <option value="Hưng Yên">Hưng Yên</option>
+              <option value="Khánh Hòa">Khánh Hòa</option>
+              <option value="Kiên Giang">Kiên Giang</option>
+              <option value="Kon Tum">Kon Tum</option>
+              <option value="Lai Châu">Lai Châu</option>
+              <option value="Lâm Đồng">Lâm Đồng</option>
+              <option value="Lạng Sơn">Lạng Sơn</option>
+              <option value="Lào Cai">Lào Cai</option>
+              <option value="Long An">Long An</option>
+              <option value="Nam Định">Nam Định</option>
+              <option value="Nghệ An">Nghệ An</option>
+              <option value="Ninh Bình">Ninh Bình</option>
+              <option value="Ninh Thuận">Ninh Thuận</option>
+              <option value="Phú Thọ">Phú Thọ</option>
+              <option value="Phú Yên">Phú Yên</option>
+              <option value="Quảng Bình">Quảng Bình</option>
+              <option value="Quảng Nam">Quảng Nam</option>
+              <option value="Quảng Ngãi">Quảng Ngãi</option>
+              <option value="Quảng Ninh">Quảng Ninh</option>
+              <option value="Quảng Trị">Quảng Trị</option>
+              <option value="Sóc Trăng">Sóc Trăng</option>
+              <option value="Sơn La">Sơn La</option>
+              <option value="Tây Ninh">Tây Ninh</option>
+              <option value="Thái Bình">Thái Bình</option>
+              <option value="Thái Nguyên">Thái Nguyên</option>
+              <option value="Thanh Hóa">Thanh Hóa</option>
+              <option value="Thừa Thiên Huế">Thừa Thiên Huế</option>
+              <option value="Tiền Giang">Tiền Giang</option>
+              <option value="Trà Vinh">Trà Vinh</option>
+              <option value="Tuyên Quang">Tuyên Quang</option>
+              <option value="Vĩnh Long">Vĩnh Long</option>
+              <option value="Vĩnh Phúc">Vĩnh Phúc</option>
+              <option value="Yên Bái">Yên Bái</option>
+          </select>
+
+          <script>
+          document.addEventListener('DOMContentLoaded', function () {
+              const element = document.getElementById('receivesSelect');
+              const choices = new Choices(element, {
+                  searchEnabled: true,
+                  itemSelectText: '',
+                  shouldSort: false   
+              });
+          });
+      </script>
+    </div>
+
+        
+
+        <div class="mb-2 d-flex align-items-center">
+            <p class="mb-0 text-secondary" style="font-size: 0.9rem; min-width: 80px"><b>Lĩnh vực văn bản:</b></p>
+            <select id="fieldSelect" class="ms-2 w-48 px-4 py-2 border border-gray-300 rounded-xl shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all duration-300">
+                <option value="">Chọn lĩnh vực văn bản</option>
+            </select>
+        </div>
+
+        <div class="mb-2 d-flex align-items-center">
+            <p class="mb-0 text-secondary" style="font-size: 0.9rem; min-width: 80px"><b>Đơn vị/Người soạn thảo.:</b></p>
+            <select id="singerinfoSelect" class="ms-2 w-48 px-4 py-2 border border-gray-300 rounded-xl shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all duration-300">
+                <option value="">Chọn người ký</option>
+            </select>
+        </div>
+
+        <div class="mb-2 d-flex align-items-center">
+            <p class="mb-0 text-secondary" style="font-size: 0.9rem; min-width: 80px"><b>Trạng thái hiệu lực:</b></p>
+            <select id="validityStatusInput" class="ms-2 w-48 px-4 py-2 border border-gray-300 rounded-xl shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-300">
+                <option value="Đang hoạt động">Đang hoạt động</option>
+                <option value="Đã xóa">Đã xóa</option>
+                <option value="Chưa xác nhận">Chưa xác nhận</option>
+            </select>
+        </div>
+
+        <div class="text-center">
+        <button class="btn btn-success rounded-pill px-4 py-2 fw-bold mb-2" id="saveBtn" style="transition: 0.3s;">
+            <i class="bi bi-save me-2"></i> Lưu
+        </button>
+        <br>
+        <button class="btn btn-primary rounded-pill px-4 py-2 fw-bold" id="closeDropdowns" style="transition: 0.3s;">
+            <i class="bi bi-x-circle me-2"></i> Đóng
+        </button>
+        </div>
+    </div>
+</form>

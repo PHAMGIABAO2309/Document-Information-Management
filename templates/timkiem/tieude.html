@@ -1,0 +1,19 @@
+<div class="flex items-center">
+    <input id="searchInput" class="border border-gray-300 rounded-l px-4 py-2" style="width: 600px;" placeholder="Tìm kiếm văn bản..." type="text"  onkeydown="handleKeyPress(event)"/>
+    <button class="bg-red-600 text-white px-4 py-2 rounded-r" onclick="searchDocuments()">Tìm kiếm</button>
+    <a href="/tracuu" class="ml-2 text-gray-600"><i class="fas fa-cogs"> </i>Tìm năng cao</a>
+</div>
+
+<script>
+    function searchDocuments() {
+        const searchInput = document.getElementById("searchInput").value.trim();
+        if (searchInput.length > 0) {
+            window.location.href = `/tracuu?titles=${encodeURIComponent(searchInput)}`;
+        }
+    }
+    function handleKeyPress(event) {
+        if (event.key === "Enter") {
+            searchDocuments(); 
+        }
+    }
+</script>

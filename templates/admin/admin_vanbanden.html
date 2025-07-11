@@ -1,0 +1,533 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý văn bản đến</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/static/js/dongform.js"></script>
+    <style> 
+    body { background-color: #f1f3f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .sidebar {  height: 100vh; position: fixed; width: 250px;  background-color: #212529; box-shadow: 2px 0 8px rgba(0,0,0,0.1); }
+    .sidebar h4 {  border-bottom: 1px solid #495057;}
+    .sidebar a {
+      color: #dee2e6;
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      font-weight: 500;
+      text-decoration: none;
+      transition: background 0.3s ease;
+    }
+    .sidebar a:hover {
+      background-color: #495057;
+      color: #fff;
+      cursor: pointer;
+    }
+    .sidebar i {  margin-right: 10px;}
+    .main-content {  margin-left: 250px; }
+    .table-container { background: #fff;  padding: 25px;  border-radius: 12px;  box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+    .table-scroll {
+      max-height: 600px; 
+      overflow-y: auto;  overflow-x: auto;
+    }
+
+    .overlay, .overlay_chitiet, .overlay_update {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 250px; 
+      width: calc(100% - 250px);
+      height: 100vh;
+      background-color: rgba(0,0,0,0.8);
+      z-index: 1040;
+    }
+    #addDocumentForm_chitiet, #addDocumentForm_update {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      min-width: 320px;
+      padding: 1.5rem;
+      border: none;
+      background: linear-gradient(135deg, #ffffff, #f0f4f8);
+      border-radius: 1rem;
+      box-shadow: 0 0 25px rgba(0, 123, 255, 0.4); 
+      z-index: 1050;
+      font-family: 'Poppins', sans-serif;
+    }
+
+#searchInput.custom-search {
+  border-radius: 25px;
+  padding: 6px 15px;
+  font-size: 14px;
+  width: 180px;
+  min-width: 150px;
+  border: 1px solid #0b6cd4;
+  background-color: #f8f9fa;
+  transition: all 0.3s ease;
+}
+
+#searchInput.custom-search:hover,
+#searchInput.custom-search:focus {
+  border-color: #007bff;
+  background-color: #fff;
+  outline: none;
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.4);
+}
+
+.badge.bg-primary {
+  font-size: 14px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background-color: #007bff;
+}
+
+#addDocumentButton {
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  background-color: #007bff;
+  border: none;
+  transition: 0.3s ease;
+}
+
+#addDocumentButton:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+
+  
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+  {% include "admin/sidebar.html" %}
+<div class="main-content">
+    <div class="table-container">
+
+      <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+  <h2 class="mb-0 d-flex align-items-center text-primary">
+    <i class="bi bi-folder2-open me-2"></i> Danh sách văn bản đến
+  </h2>
+
+  <div class="d-flex align-items-center ms-auto gap-2 flex-wrap justify-content-end">
+    <input type="text" class="form-control custom-search" id="searchInput" placeholder="🔍 Tìm kiếm..." />
+
+    <span class="badge bg-primary shadow-sm">
+      Tổng văn bản đến: <span id="totalTypeDoc" class="fw-bold text-warning"></span>
+    </span>
+
+    <button class="btn btn-primary btn-sm d-flex align-items-center gap-1 shadow-sm" id="addDocumentButton">
+      <i class="bi bi-plus-circle"></i> Thêm văn bản
+    </button>
+  </div>
+</div>
+
+        
+        <div class="table-scroll">
+          <table class="table table-hover table-bordered">
+            <thead class="table-dark">
+              <tr>
+                <th>#</th>
+                <th>Mã văn bản</th>
+                <th>Tên văn bản</th>
+                <th>Ngày tải lên</th>
+                <th>Loại văn bản</th>
+                <th>Tệp đính kèm</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="filecode"></td>
+                <td class="title"></td>
+                <td class="startdate"></td>
+                <td class="typename"></td>
+                <td class="filedinhkem"></td>
+                <td class="validitystatus"></td>
+                <td>
+                <!-- thao tac nut -->
+                </td>
+              </tr>
+          </tbody>
+        </table>
+        </div>
+    </div>
+</div>
+<!-- them van ban den -->
+ {% include "pages/admin_vanbanden/themvanbanden.html" %}
+<!-- xem chi tiet -->
+ {% include "pages/admin_vanbanden/xemchitiet.html" %}
+<!-- cap nhat van ban den -->
+ {% include "pages/admin_vanbanden/capnhatvanbanden.html" %}
+
+</body>
+</html>
+<script>
+ async function loadDocuments(scrollToIndex = -1) {
+  const formatDate = (isoDate) => isoDate ? isoDate.split("-").reverse().join("/") : "Chưa xác định";
+  const response = await fetch(`/api/danhsachvanban`);
+  const data = await response.json();
+
+  const tbody = document.querySelector("table tbody");
+  tbody.innerHTML = "";
+  document.getElementById("totalTypeDoc").textContent = data.length;
+
+  data.forEach((item, index) => {
+    const row = document.createElement("tr");
+
+    row.insertCell().textContent = index + 1;
+    row.insertCell().textContent = item.filecode;
+    row.insertCell().textContent = item.title;
+    row.insertCell().textContent = formatDate(item.startdate);
+    row.insertCell().textContent = item.typename;
+
+    const fileAttachCell = row.insertCell();
+    fileAttachCell.innerHTML = `
+      <a href="#" 
+         class="attachment-link text-blue-900 underline text-sm hover:text-blue-600" 
+         data-filecode="${item.filecode}">
+        <i class="fas fa-paperclip mr-1"></i> File đính kèm
+      </a>
+    `;
+
+    row.insertCell().textContent = item.validitystatus;
+
+    const actionsCell = row.insertCell();
+    actionsCell.innerHTML = `
+      <button class="btn btn-primary btn-sm btn-view-document"  
+        data-title="${item.title}" 
+        data-startdate="${formatDate(item.startdate)}" 
+        data-typename="${item.typename}"
+        data-filecode="${item.filecode}">
+        <i class="bi bi-eye-fill"></i> Xem
+      </button>
+      <button class="btn btn-success btn-sm btn-update" 
+      data-typeid="${item.typeid}"
+      data-oranid="${item.oranid}"
+      data-posid="${item.posid}"
+      data-infoid="${item.infoid}"><i class="fas fa-edit"></i> Sửa</button>
+      <button class="btn btn-danger btn-sm btn-delete" data-id="${item.filecode}" data-infoid="${item.infoid}"><i class="bi bi-trash3-fill"></i> Xoá</button>
+    `;
+    row.dataset.filecode = item.filecode.toLowerCase();
+     row.dataset.title = item.title.toLowerCase();    
+    tbody.appendChild(row);
+  });
+
+  // Bắt sự kiện tìm kiếm
+  searchInput.addEventListener("input", () => {
+    const searchTerm = searchInput.value.toLowerCase();
+    tbody.querySelectorAll("tr").forEach(row => {
+        const { filecode = "", title = "" } = row.dataset;
+        row.style.display = (filecode.includes(searchTerm) || title.includes(searchTerm)) ? "" : "none";
+    });
+  });
+
+  // nuút cap nhat
+  tbody.addEventListener("click", async (event) => {
+    if (event.target.closest(".btn-update")) {
+        const button = event.target.closest(".btn-update");
+        const row = button.closest("tr");
+        const filecode = row.querySelector(".attachment-link").dataset.filecode;
+        const title = row.cells[2].textContent;
+        let startdate = row.cells[3].textContent;
+        const typeid = button.dataset.typeid || "";
+        const oranid = button.dataset.oranid || "";
+        const posid = button.dataset.posid || "";
+        const fieldid = button.dataset.fieldcode || "";
+        const infoid = button.dataset.infoid || "";
+       
+        function convertDateToISO(dateStr) {
+            if (typeof dateStr !== "string") return "";
+            const parts = dateStr.split("/");
+            if (parts.length !== 3) return "";
+            const [day, month, year] = parts;
+            if (!day || !month || !year) return "";
+            return `${year.padStart(4, '0')}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+        }
+
+        startdate = convertDateToISO(startdate);
+
+        document.getElementById("xemFileCode").value = filecode;
+        document.getElementById("xemTitle").value = title;
+        document.getElementById("xemStartDate").value = startdate;
+        document.getElementById("typenameSelect").value = typeid;
+        document.getElementById("orannameSelect").value = oranid;
+        document.getElementById("singerinfoSelect").value = posid;
+        document.getElementById("fieldSelect").value = fieldid;
+        document.getElementById("xemInfoId").value = infoid;
+
+        document.getElementById("addDocumentForm_update").style.display = "block";
+        document.getElementById("formOverlay_update").style.display = "block";
+    }
+});
+document.getElementById("saveBtn").addEventListener("click", async () => {
+    try {
+        // Lấy giá trị các input
+        const filecode = document.getElementById("xemFileCode").value || null;
+        const xemTitle = document.getElementById("xemTitle").value || null;
+        const xemStartDate = document.getElementById("xemStartDate").value || null;
+        const orannameSelect = document.getElementById("orannameSelect").value || null;
+        const xemFileNoNation = document.getElementById("xemFileNoNation").value || null;
+        const typenameSelect = document.getElementById("typenameSelect").value || null;
+        const xemUpdateDate = document.getElementById("xemUpdateDate").value || null;
+
+        const xemInfoId = document.getElementById("xemInfoId").value || null;
+        const receivesSelect = document.getElementById("receivesSelect").value || null;
+        const singerinfoSelect = document.getElementById("singerinfoSelect").value || null;
+        const validityStatusInput = document.getElementById("validityStatusInput").value || null;
+        const fieldSelect = document.getElementById("fieldSelect").value || null;
+
+        console.log("Dữ liệu gửi:", {
+            file_code: filecode,
+            title: xemTitle,
+            start_date: xemStartDate,
+            oran_id: orannameSelect,
+            file_no_nation: xemFileNoNation,
+            type_id: typenameSelect,
+            date_update: xemUpdateDate,
+            info_id: xemInfoId,
+            receives: receivesSelect,
+            pos_id: singerinfoSelect,
+            validity_status: validityStatusInput,
+            field_code: fieldSelect
+        });
+
+        // Gửi request PUT
+        const response = await fetch("/api/admin/update_vanbanden", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                file_code: filecode,
+                title: xemTitle,
+                start_date: xemStartDate,
+                oran_id: orannameSelect,
+                file_no_nation: xemFileNoNation,
+                type_id: typenameSelect,
+                date_update: xemUpdateDate,
+                info_id: xemInfoId,
+                receives: receivesSelect,
+                pos_id: singerinfoSelect,
+                validity_status: validityStatusInput,
+                field_code: fieldSelect
+            }),
+        });
+
+        // Nếu lỗi HTTP thì bắt lỗi luôn
+        if (!response.ok) {
+            throw new Error(`Lỗi HTTP: ${response.status}`);
+        }
+
+        const result = await response.json();
+        console.log("Kết quả trả về từ API:", result);
+
+        // Kiểm tra kết quả trả về
+        if (result.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Cập nhật thành công!',
+                text: result.message || "Đã cập nhật thành công.",
+                showConfirmButton: true,
+                timer: 55000,
+            }).then(() => {
+                location.reload();
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi!',
+                text: result.message || "Đã xảy ra lỗi khi cập nhật.",
+            });
+        }
+    } catch (error) {
+        console.error("Lỗi khi cập nhật:", error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi hệ thống!',
+            text: error.message || "Không thể kết nối đến máy chủ.",
+        });
+    }
+});
+
+
+  document.getElementById("closeFormBtn_update").addEventListener("click", () => {
+    document.getElementById("addDocumentForm_update").style.display = "none";
+    document.getElementById("formOverlay_update").style.display = "none";
+});
+document.getElementById("formOverlay_update").addEventListener("click", () => {
+    document.getElementById("addDocumentForm_update").style.display = "none";
+    document.getElementById("formOverlay_update").style.display = "none";
+});
+
+
+  // Xử lý nút delete
+  tbody.addEventListener("click", async (event) => {
+      if (event.target.closest(".btn-delete")) {
+          const button = event.target.closest(".btn-delete");
+           const info_id = button.getAttribute("data-infoid");
+          const file_code = button.getAttribute("data-id");
+         
+          const confirmResult = await Swal.fire({
+              title: `Bạn có chắc muốn xoá văn bản có Mã : ${file_code} không?`,
+              text: "Hành động này không thể hoàn tác!",
+              icon: "warning",
+              showCancelButton: true,
+              confirmButtonColor: "#d33",
+              cancelButtonColor: "#3085d6",
+              confirmButtonText: "Xoá ngay",
+              cancelButtonText: "Hủy"
+          });
+          if (confirmResult.isConfirmed) {
+              try {
+                  const res = await fetch("/api/admin/delete_vanbanden", {
+                      method: "PUT",
+                      headers: {
+                          "Content-Type": "application/json"
+                      },
+                      body: JSON.stringify({info_id: info_id, file_code: file_code  })
+                  });
+                  const result = await res.json();
+                  if (result.success) {
+                      await Swal.fire({title: "Đã xoá!", text: result.message,  icon: "success",  timer: 1000, showConfirmButton: false
+                      });
+                      location.reload();
+                  } else {
+                      Swal.fire("Lỗi!", result.message, "error");
+                  }
+              } catch (error) {
+                  console.error("Error:", error);
+                  Swal.fire("Lỗi!", "Không thể kết nối đến server", "error");
+              }
+          }
+      }
+  });
+
+  // Gắn lại sự kiện cho các link file đính kèm sau khi tải lại bảng
+  document.querySelectorAll(".attachment-link").forEach(link => {
+    link.addEventListener("click", async function (e) {
+      e.preventDefault();
+      const fileCode = this.dataset.filecode;
+
+      if (!fileCode) {
+        alert("Không tìm thấy mã file!");
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/dinhkemfile?file_code=${fileCode}`);
+        const data = await res.json();
+
+        if (data.length > 0 && data[0].path) {
+          const filePath = data[0].path;
+          window.location.href = `/path?path=${encodeURIComponent(filePath)}`;
+        } else {
+          alert("Không tìm thấy file đính kèm!");
+        }
+      } catch (err) {
+        console.error("Lỗi khi tải file đính kèm:", err);
+        alert("Có lỗi xảy ra khi tải file!");
+      }
+    });
+  });
+
+  // Nếu có chỉ số hàng muốn scroll đến, thực hiện scroll và highlight
+  if (scrollToIndex >= 0 && tbody.children.length > scrollToIndex) {
+    const targetRow = tbody.children[scrollToIndex];
+    // Scroll vào view
+    targetRow.scrollIntoView({ behavior: "smooth", block: "center" });
+    // Flash background vàng
+    let flashCount = 6;
+    const originalBg = targetRow.style.backgroundColor;
+    const flash = () => {
+      if (flashCount-- > 0) {
+        targetRow.style.backgroundColor = (flashCount % 2 === 0) ? 'yellow' : originalBg;
+        setTimeout(flash, 400);
+      } else {
+        targetRow.style.backgroundColor = originalBg;
+      }
+    };
+    flash();
+  }
+}
+
+document.getElementById("addDocumentForm").onsubmit = async e => {
+  e.preventDefault();
+  const form = document.getElementById("addDocumentForm");
+  const formData = new FormData(form);
+  const file = document.getElementById("path").files[0];
+  if (!file) {
+  Swal.fire({
+    icon: "warning",
+    title: "Chưa chọn tệp!",
+    text: "⚠️ Vui lòng chọn tệp để tiếp tục.",
+    confirmButtonText: "OK"
+  });
+  return;
+}
+  formData.append("file", file);
+  const r = await fetch("/api/admin/themvanbanden", {
+    method: "POST",
+    body: formData
+  });
+
+  const text = await r.text();
+  Swal.fire({
+  icon: "success",
+  title: "Thành công!",
+  text: "✅ " + text,
+  showConfirmButton: false, // ẩn nút OK
+  timer: 1000, // 1000 ms = 1s
+  timerProgressBar: true
+});
+
+
+  if (r.ok) {
+    // Tắt form
+    form.classList.add("d-none");
+    document.getElementById("formOverlay").style.display = "none";
+
+    // Load lại danh sách, scroll đến cuối (hàng mới thêm)
+    // Giả sử hàng mới thêm là cuối cùng, index = tổng số phần tử - 1
+    const response = await fetch(`/api/danhsachvanban`);
+    const data = await response.json();
+    loadDocuments(data.length - 1);
+  }
+};
+
+// Load danh sách lần đầu
+document.addEventListener("DOMContentLoaded", () => {
+  loadDocuments();
+});
+
+</script>
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", async () => {
+  const { type_documents, organizations, positions, fields } = await (await fetch("/api/admin/article")).json();
+  const createOptions = (selectElement, items, valueKey, textKey) => {
+    items.forEach(item => {
+      const option = document.createElement("option");
+      option.value = item[valueKey];
+      option.textContent = item[textKey];
+      selectElement.appendChild(option);
+    });
+  };
+  createOptions(document.querySelector("#typenameSelect"), type_documents, "typeid", "typename");
+  createOptions(document.querySelector("#orannameSelect"), organizations, "oranid", "oranname");
+  createOptions(document.querySelector("#singerinfoSelect"), positions, "posid", "singerinfo");
+  createOptions(document.querySelector("#fieldSelect"), fields, "fieldcode", "fieldname");
+});
+</script>

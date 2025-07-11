@@ -1,0 +1,21 @@
+<div class="div">
+    <select id="yearSelect" class="border border-gray-300 rounded px-3 py-2">
+        <option value="">Năm ban hành</option>
+    </select>
+    <p id="selectedYear"></p> 
+ </div>
+ <!-- tim theo nam ban hành -->
+<script>
+    const selectElement = document.getElementById('yearSelect');
+    const selectedYearElement = document.getElementById('selectedYear');
+    const currentYear = new Date().getFullYear();
+    for (let year = currentYear; year >= 1975; year--) {
+        selectElement.innerHTML += `<option value="${year}" data-value="${year}">${year}</option>`;
+    }
+    selectElement.addEventListener('change', function(e) {
+        const year = e.target.value;
+        if (year) {
+            window.location.href = `/tracuu?filecatalog=${encodeURIComponent(year)}`;
+        }
+    });
+</script>

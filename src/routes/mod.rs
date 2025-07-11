@@ -1,0 +1,21 @@
+
+pub mod trangchu;
+pub mod tracuu;
+pub mod main;
+pub mod taive;
+pub mod hienphap1980;
+pub mod hienphap2013;
+pub mod document;
+pub mod admin;
+pub mod admin_loaivanban;
+pub mod login;
+pub mod register;
+pub mod admin_nguoidung;
+pub mod admin_coquan;
+pub mod admin_vanbanden;
+pub mod dinhkemfile;
+pub mod quenmatkhau;
+pub mod xacnhanmatkhau;
+pub mod admin_trangchinh;
+pub mod admin_thongke;
+pub mod ocr_quanlyvanban;

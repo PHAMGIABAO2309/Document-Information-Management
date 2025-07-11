@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tra cuu van ban</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
+    <script src="/static/js/api_ketquatimkiem.js"></script>
+    <script src="/static/js/api_goiytimkiem.js"></script>
+    <script src="/static/js/api_TrangChuu.js"></script>
+</head>
+<body>
+    {% include "pages/header/header.html" %}
+    <main class="container mx-auto py-6 px-6">
+        <div class="flex items-center space-x-2 text-gray-600 text-sm" >
+            <a class="hover:underline" href="javascript:void(0);" onclick="window.location.href='/trangchu'"><i class="fas fa-home"></i> Văn bản mới </a>
+            <span> / </span>
+        </div>
+        <div class="flex">
+            <div class="mt-6">
+                <h1 class="text-2xl font-bold mt-[-10px]">Tra cứu văn bản</h1>
+                <div class="change page active_page" id="page_first">
+                    <div class="bg-gray p-1 mt-4 pl-4 shadow rounded w-[850px] h-[70px]">
+                        <div class="flex space-x-2 mt-2">
+                           <!-- tim kiem tieu de  -->
+                           {% include "timkiem/tieude.html" %}
+                        </div>
+                    </div>
+                    <h6 class="sum-index">
+                        <!-- hieênệ toôngổng vaăn baản -->
+                    </h6>
+                    <!-- Dropdown -->
+                    {% include "timkiem/goi_y_tieude.html" %}
+                    <div class="bg-white p-4 mt-4 shadow rounded w-[850px] h-[430px] overflow-y-auto">
+                        <div style="height: 45px; display: flex; align-items: center; justify-content: space-between;">
+                           <div class="flex items-center space-x-4">
+                                <label class="font-semibold">Bộ lọc:</label>
+                                <!-- linh vuc tra cuu -->
+                                {% include "timkiem/linhvuctracuu.html" %}
+                                <!-- nam ban hanh -->
+                                {% include "timkiem/nambanhanh.html" %}
+                                <!-- loai van ban -->
+                                {% include "timkiem/loaivanban.html" %}
+                                <!-- co quan ban hanh -->
+                                {% include "timkiem/coquanbanhanh.html" %}
+                            </div>
+                        </div>
+                        <hr>
+                        <br>
+                        <div class="max-w-4xl mx-auto">
+                            <div class="flex justify-between items-center mb-2">
+                                <div class="flex space-x-2">
+                                    <button class="border border-gray-300 p-2">
+                                        <i class="fas fa-th"></i>
+                                    </button>
+                                    <button class="border border-gray-300 p-2">
+                                        <i class="fas fa-bars"></i>
+                                    </button>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-gray-600">Sắp xếp theo:</span>
+                                    <select class="border border-gray-300 p-1">
+                                        <option>Mới ban hành</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="searchResults">
+                                <div class="file-item flex border-t border-gray-300 pt-2 hidden template">
+                                    <div class="flex justify-between w-full">
+                                        <div class="flex justify-between  p-2   w-full max-w-4xl space-x-6">
+                                            <!-- Bên trái: Tiêu đề và các link -->
+                                            <div class="flex space-x-2 w-2/3">
+                                                <span class="index font-bold"></span>
+                                                <div>
+                                                    <p class="title text-gray-800 font-bold cursor-pointer hover:text-orange-600"></p>
+                                                    <div class="flex flex-wrap space-x-4 text-gray-600 mt-2">
+                                                        <a href="#" class="hover:underline">Tóm tắt</a>
+                                                        <a href="#" class="hover:underline">VB liên quan</a>
+                                                        <a href="#" class="hover:underline">Hiệu lực</a>
+                                                        <a href="#" class="hover:underline">Lược đồ</a>
+                                                        <a href="#" class="hover:underline">Tiếng Anh</a>
+                                                        <a class="download hover:underline" download>Tải về</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        
+                                            <!-- Bên phải: Ngày tháng -->
+                                            <div class="flex flex-col text-sm text-gray-600  space-y-2">
+                                                <div class="flex justify-between">
+                                                    <span class="w-24">Ban hành:</span>
+                                                    <span class="start-date text-orange-600"></span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span class="w-24">Áp dụng:</span>
+                                                    <span class="text-orange-600">Đã biết</span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span class="w-24">Hiệu lực:</span>
+                                                    <span class="text-orange-600">Đã biết</span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span class="w-24">Cập nhật:</span>
+                                                    <span class="update-date text-orange-600"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-10 ml-6">
+            <!-- Loại văn bản -->
+            <div>
+              <button type="button" aria-expanded="true" aria-controls="loai-van-ban" class="flex items-center justify-between w-full font-semibold text-sm text-gray-900">
+                <span>Loại văn bản</span>
+                <i class="fas fa-chevron-up text-gray-700"></i>
+              </button>
+              <div id="loai-van-ban" class="mt-2 max-h-48 overflow-y-auto border border-gray-200 rounded-md px-2 py-1">
+                <label class="flex items-center space-x-2 text-sm text-gray-900 cursor-pointer">
+                  <input type="checkbox" class="w-4 h-4 border-gray-300 rounded" />
+                  <span>Hiến pháp <span class="text-gray-500">(5)</span></span>
+                </label>
+                <label class="flex items-center space-x-2 text-sm text-gray-900 cursor-pointer">
+                  <input type="checkbox" class="w-4 h-4 border-gray-300 rounded" />
+                  <span>Bộ luật <span class="text-gray-500">(14)</span></span>
+                </label>
+                <label class="flex items-center space-x-2 text-sm text-gray-900 cursor-pointer">
+                  <input type="checkbox" class="w-4 h-4 border-gray-300 rounded" />
+                  <span>Lệnh <span class="text-gray-500">(346)</span></span>
+                </label>
+                <label class="flex items-center space-x-2 text-sm text-gray-900 cursor-pointer">
+                  <input type="checkbox" class="w-4 h-4 border-gray-300 rounded" />
+                  <span>Luật <span class="text-gray-500">(744)</span></span>
+                </label>
+                <label class="flex items-center space-x-2 text-sm text-gray-900 cursor-pointer">
+                  <input type="checkbox" class="w-4 h-4 border-gray-300 rounded" />
+                  <span>Pháp lệnh <span class="text-gray-500">(234)</span></span>
+                </label>
+                <label class="flex items-center space-x-2 text-sm text-gray-900 cursor-pointer">
+                  <input type="checkbox" class="w-4 h-4 border-gray-300 rounded" />
+                  <span>Nghị định <span class="text-gray-500">(5.209)</span></span>
+                </label>
+                <label class="flex items-center space-x-2 text-sm text-gray-900 cursor-pointer">
+                  <input type="checkbox" class="w-4 h-4 border-gray-300 rounded" />
+                  <span>Nghị quyết <span class="text-gray-500">(13.676)</span></span>
+                </label>
+                <label class="flex items-center space-x-2 text-sm text-gray-900 cursor-pointer">
+                  <input type="checkbox" class="w-4 h-4 border-gray-300 rounded" />
+                  <span>Quyết định <span class="text-gray-500">(129.786)</span></span>
+                </label>
+              </div>
+            </div>
+        
+            <!-- Tình trạng hiệu lực -->
+            <div class="mt-4">
+                <button  type="button" aria-expanded="false" aria-controls="tinh-trang-hieu-luc" class="flex items-center justify-between w-full font-semibold text-sm text-gray-900">
+                <span>Tình trạng hiệu lực</span>
+                <i class="fas fa-chevron-down text-gray-700"></i>
+              </button>
+              <hr class="mt-2">
+            </div>
+        
+            <!-- Cơ quan ban hành -->
+            <div class="mt-2">
+                <button type="button" aria-expanded="true" aria-controls="co-quan-ban-hanh" class="flex items-center justify-between w-full font-semibold text-sm text-gray-900" onclick="toggleDropdown()">
+                    <span>Cơ quan ban hành</span>
+                    <i id="chevron-icon" class="fas fa-chevron-up text-gray-700"></i>
+                </button>
+              <div id="co-quan-ban-hanh">
+                <div class="mt-2">
+                    <input type="search"  placeholder="Tìm kiếm cơ quan ban hành"  class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"  aria-label="Tìm kiếm cơ quan ban hành"/>
+                  </div>
+                  <div class="mt-2 max-h-48 max-w-60 overflow-y-auto overflow-x-auto border border-gray-200 rounded-md px-2 py-1">
+                    <label class="flex items-center space-x-2 text-sm text-gray-900 cursor-pointer">
+                      <input type="checkbox" class="w-4 h-4 border-gray-300 rounded" />
+                      <span>Tổng cục Thuế <span class="text-gray-500">(22.568)</span></span>
+                    </label>
+                    <label class="flex items-center space-x-2 text-sm text-gray-900 cursor-pointer">
+                      <input type="checkbox" class="w-4 h-4 border-gray-300 rounded" />
+                      <span>Tổng cục Hải quan <span class="text-gray-500">(20.896)</span></span>
+                    </label>
+                    <label class="flex items-center space-x-2 text-sm text-gray-900 cursor-pointer">
+                      <input type="checkbox" class="w-4 h-4 border-gray-300 rounded" />
+                      <span>Thủ tướng Chính phủ <span class="text-gray-500">(20.469)</span></span>
+                    </label>
+                    <label class="flex items-center space-x-2 text-sm text-gray-900 cursor-pointer">
+                      <input type="checkbox" class="w-4 h-4 border-gray-300 rounded" />
+                      <span>Bộ Khoa học và Công nghệ <span class="text-gray-500">(14.908)</span></span>
+                    </label>
+                    <label class="flex items-center space-x-2 text-sm text-gray-900 cursor-pointer">
+                      <input type="checkbox" class="w-4 h-4 border-gray-300 rounded" />
+                      <span>Văn phòng Chính phủ <span class="text-gray-500">(14.227)</span></span>
+                    </label>
+                    <label class="flex items-center space-x-2 text-sm text-gray-900 cursor-pointer">
+                      <input type="checkbox" class="w-4 h-4 border-gray-300 rounded" />
+                      <span>Bộ Tài chính <span class="text-gray-500">(14.161)</span></span>
+                    </label>
+                    <label class="flex items-center space-x-2 text-sm text-gray-900 cursor-pointer">
+                      <input type="checkbox" class="w-4 h-4 border-gray-300 rounded" />
+                      <span>Bộ Xây dựng <span class="text-gray-500">(9.947)</span></span>
+                    </label>
+                    <label class="flex items-center space-x-2 text-sm text-gray-900 cursor-pointer ">
+                      <input type="checkbox" class="w-4 h-4 border-gray-300 rounded" />
+                      <span>Ủy ban nhân dân Thành phố fffHà Nội <span class="text-gray-500">(9.947)</span></span>
+                    </label>
+                  </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+    </main>
+    <script>
+        function toggleDropdown() {
+          const dropdown = document.getElementById('co-quan-ban-hanh');
+          const isExpanded = dropdown.style.display === 'block';
+          if (isExpanded) {
+            dropdown.style.display = 'none';
+          } else {
+            dropdown.style.display = 'block';
+          }
+          // Cập nhật thuộc tính aria-expanded
+          document.querySelector('button').setAttribute('aria-expanded', !isExpanded);
+        }
+    </script>
+</body>
+</html>
+<script>
+    document.addEventListener("DOMContentLoaded", async () => {
+        const params = new URLSearchParams(location.search);
+        const oranname = params.get("oranname");
+        const typename = params.get("typename");
+        const fieldname = params.get("fieldname");
+        const filecatalog = params.get("filecatalog");
+        let url = "/api/list_files";
+        if (oranname && oranname !== "all") {
+            url = `/api/search_organization?oranname=${encodeURIComponent(oranname)}`;
+        } else if (typename && typename !== "all") {
+            url = `/api/search_typedocuments?typename=${encodeURIComponent(typename)}`;
+        } else if (fieldname && fieldname !== "all") {
+            url = `/api/search_fields?fieldname=${encodeURIComponent(fieldname)}`;
+        } else if (filecatalog && filecatalog !== "all") {
+            url = `/api/search_filecatalog?filecatalog=${encodeURIComponent(filecatalog)}`;
+        } 
+        const data = await (await fetch(url)).json();
+        const container = document.getElementById("searchResults");
+        const template = container.querySelector(".template");
+        const sumIndex = document.querySelector(".sum-index");
+        sumIndex.textContent = `Tổng số văn bản: ${data.length}`;
+        data.forEach((item, i) => {
+            const clone = template.cloneNode(true);
+            clone.classList.remove("hidden", "template");
+            clone.querySelector(".index").textContent = i + 1;
+            clone.querySelector(".title").textContent = item.Title;
+            clone.querySelector(".title").onclick = () => location.href = `/documents/${item.filecode}`;
+            clone.querySelector(".start-date").textContent = item.startdate;
+            clone.querySelector(".update-date").textContent = item.dateupdate;
+            container.appendChild(clone);
+        });
+    });
+</script>
+
+    
+
+    

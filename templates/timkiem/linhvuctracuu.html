@@ -1,0 +1,49 @@
+<!-- linh vuc tra cuu -->
+<div class="relative">
+    <input type="text" id="selectLinhVuc" placeholder="Lĩnh vực tra cứu"
+        class="z-10 border border-gray-300 rounded px-3 py-2 w-full cursor-pointer appearance-none bg-white focus:outline-none placeholder:text-black font-normal" readonly>
+    <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">▼</div>
+    <div id="dropdownLinhVuc" class="absolute w-64 hidden z-10 bg-white  z-10">
+        <input id="searchLinhVuc" type="text" placeholder="Tìm kiếm lĩnh vực tra cứu..." class="w-full px-4 py-2 border border-gray-300 rounded z-10">
+        <div class="absolute w-full mt-1 bg-white border border-gray-300 rounded shadow-lg max-h-60 overflow-y-auto mt-[-1px]">
+            <ul id="listLinhVuc" class="py-1">
+                <!-- Dữ liệu sẽ được thêm động bằng JavaScript -->
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- tim theo linh vuc -->
+<script>
+    document.addEventListener("DOMContentLoaded", async () => {
+        const [data, list, input, selectCQ, dropdownCQ, dropdownLV, selectLV] = await Promise.all([
+            fetch("/api/thuoctinhvanban").then(res => res.json()),
+            ...["listLinhVuc", "searchLinhVuc", "selectLinhVuc", "dropdownLinhVuc", "dropdownLoaiVanBan", "selectLinhVuc"]
+                .map(id => document.getElementById(id))
+        ]);
+        const render = d => {
+            list.innerHTML = `<li class="px-4 py-2 hover:bg-gray-100 cursor-pointer" data-value="all">Tất cả</li>` +
+                d.fields.map(i => 
+                    `<li class="px-4 py-2 hover:bg-gray-100 cursor-pointer" data-value="${i.fieldname}">${i.fieldname}</li>`
+                ).join('');
+                
+                list.addEventListener('click', function (e) {
+                if (e.target && e.target.matches("li[data-value]")) {
+                    const value = e.target.getAttribute("data-value");
+                    window.location.href = `/tracuu?fieldname=${encodeURIComponent(value)}`;
+                }
+            });
+        };
+        render(data);
+        input.addEventListener("input", () => render({ fields: data.fields.filter(i => i.fieldname.toLowerCase().includes(input.value.toLowerCase().trim())) }));
+        selectCQ.onclick = () => {
+            dropdownCQ.style.top = selectCQ.offsetTop + selectCQ.offsetHeight + "px";
+            dropdownCQ.style.left = selectCQ.offsetLeft + "px";
+            dropdownCQ.classList.toggle("hidden");
+        };
+        document.onclick = e => {
+            if (!selectCQ.contains(e.target) && !dropdownCQ.contains(e.target))
+                dropdownCQ.classList.add("hidden");
+        };
+    });
+</script>

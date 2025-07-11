@@ -1,0 +1,58 @@
+<!-- Overlay + Form thêm cơ quan -->
+<div id="overlayyy" style="display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+    <div id="add-form" class="card p-4" style=" width: 400px; background: white; position: absolute;  top: 50%; left: 50%; transform: translate(-50%, -50%);">
+      <h4 class="text-center mb-4">Thêm Cơ Quan</h4>
+      <div class="mb-3">
+        <label  class="form-label">Mã cơ quan</label>
+        <input type="text" class="form-control" id="maCoQuan" placeholder="Nhập mã cơ quan" style="background-color: rgb(204, 214, 223);">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Tên cơ quan</label>
+        <input type="text" class="form-control" id="tenCoQuan" placeholder="Nhập tên cơ quan">
+      </div>
+      <div class="d-flex justify-content-between">
+        <button class="btn btn-secondary" id="btn-cancel">Hủy</button>
+        <button class="btn btn-success" id="btn-save">Lưu</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    const $ = id => document.getElementById(id),
+          overlay = $('overlayyy'), maCoQuanInput = $('maCoQuan'), tenCoQuanInput = $('tenCoQuan');
+    $('btn-add').onclick = async () => {
+      try {
+        maCoQuanInput.value = await (await fetch("/api/admin/get_new_organization_code")).text();
+        maCoQuanInput.readOnly = true;
+        overlay.style.display = "block";
+        maCoQuanInput.focus();
+        tenCoQuanInput.focus();
+      } catch (e) { alert(e.message); }
+    };
+    $('btn-cancel').onclick = () => overlay.style.display = "none";
+    overlay.onclick = e => e.target === overlay && (overlay.style.display = "none");
+    // Khi nhấn nút lưu
+    $('btn-save').onclick = async () => {
+      if (!tenCoQuanInput.value) return alert("Vui lòng nhập tên cơ quan");
+      const oranName = tenCoQuanInput.value;
+      try {
+        const checkRes = await fetch(`/api/admin/check_organization_name/${oranName}`);
+        const checkData = await checkRes.json();
+        if (checkData.exists) {
+          alert(`Tên cơ quan "${oranName}" đã tồn tại!`);
+          return;
+        }
+        // Nếu tên cơ quan chưa tồn tại, tiến hành lưu
+        const res = await fetch("/api/admin/add_organization", {
+          method: "POST", 
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ oran_id: maCoQuanInput.value, oran_name: oranName })
+        });
+        if (!res.ok) throw new Error(await res.text());
+        alert("Thêm cơ quan thành công!");
+        overlay.style.display = "none";
+        location.reload();
+      } catch (e) { 
+        alert(e.message); 
+      }
+    };
+  </script>

@@ -1,0 +1,399 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Trang Admin - Kho Lưu Trữ Văn Bản</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #f1f3f5;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .sidebar {
+      height: 100vh;
+      position: fixed;
+      width: 250px;
+      background-color: #212529;
+      box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+    }
+    .sidebar h4 {
+      border-bottom: 1px solid #495057;
+    }
+    .sidebar a {
+      color: #dee2e6;
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      font-weight: 500;
+      text-decoration: none;
+      transition: background 0.3s ease;
+    }
+    .sidebar a:hover {
+      background-color: #495057;
+      color: #fff;
+      cursor: pointer;
+    }
+    .sidebar i {
+      margin-right: 10px;
+    }
+    .main-content {
+      margin-left: 250px;
+    }
+    .table-container {
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+    .btn-sm {
+      border-radius: 20px;
+      padding: 5px 12px;
+    }
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .card {
+      width: 50%;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    /* Thêm CSS cho dropdown căn giữa */
+    .dropdown-menu {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      min-width: 550px;
+      z-index: 1050;
+      display: none; /* Ẩn dropdown ban đầu */
+      max-height: 500px;
+      overflow-y: auto;
+    }
+    #addDocumentDropdown {
+      max-height: 80vh;
+      overflow-y: auto;
+      transition: all 0.3s ease-in-out;
+    }
+    /* Overlay để làm mờ xung quanh dropdown */
+    .overlay {
+      display: none; /* Ẩn overlay ban đầu */
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5); /* Màu mờ xung quanh */
+      z-index: 1040; /* Đặt lớp overlay ở dưới dropdown */
+    }
+
+  </style>
+</head>
+<body>
+  
+  
+  <!-- Sidebar -->
+  {% include "admin/sidebar.html" %}
+
+  <!-- Nội dung chính -->
+  <div class="main-content">
+    <div class="table-container">
+      <h2 class="mb-4"><i class="bi bi-folder2-open"></i> Danh sách văn bản</h2>
+      <!-- Nút "Thêm văn bản" được căn sang phải và có icon -->
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h2 class="mb-0"></h2> <!-- Giữ khoảng trống cho tiêu đề -->
+        <div class="btn btn-primary btn-sm" id="addDocumentButton">
+            <i class="bi bi-plus-circle"></i> Thêm văn bản
+        </div>
+      </div>
+      <!-- Dropdown Menu -->
+      <div class="overlay fixed inset-0 bg-black/40 backdrop-blur-sm z-40 hidden" id="overlay"></div>
+      <div class="dropdown-menu fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[85%] max-w-7xl p-8 bg-white shadow-2xl rounded-3xl z-50 hidden transition-all duration-300" id="addDocumentDropdown">
+        <button type="button" id="closeDropdownBtn"
+          class="absolute top-4 right-4 text-gray-500 hover:text-red-500 text-2xl font-bold focus:outline-none transition">
+          &times;
+        </button>
+
+        <form id="addDocumentForm" class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-1">Tiêu đề</label>
+                  <input type="text" id="titleInput" class=" w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300" />
+              </div>
+              <div>
+                  <label  class="block text-sm font-semibold text-gray-700 mb-1">Ngày bắt đầu</label>
+                  <input type="date" id="startDate" class=" w-48 px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300" />
+              </div>
+              <div>
+                  <label  class="block text-sm font-semibold text-gray-700 mb-1">Số và ký hiệu hồ sơ</label>
+                  <input type="text" id="filenonationInput" class="w-32 px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition-all duration-300" />
+              </div>
+              <div>
+                  <label  class="block text-sm font-semibold text-gray-700 mb-1">Ngày cập nhật</label>
+                  <input type="date" id="dateUpdateInput"  class=" w-48 px-4 py-2 bg-gray-100 border border-gray-300 rounded-xl shadow-inner text-gray-600" />
+              </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div>
+              <label  class="block text-sm font-semibold text-gray-700 mb-1">Trích yếu nội dung (EN)</label>
+              <textarea id="subjectENinput" 
+                class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-300"
+                rows="4"></textarea>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1">Nơi ban hành</label>
+              <input type="text" id="receivesInput" 
+                class="w-32 px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-lime-500 focus:border-lime-500 transition-all duration-300" />
+            </div>
+          
+            <div>
+              <label  class="block text-sm font-semibold text-gray-700 mb-1">Số hiệu văn bản</label>
+              <input type="text" id="codeNumberInput"
+                class="w-28 px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-300" />
+            </div>
+
+            <div>
+              <label  class="block text-sm font-semibold text-gray-700 mb-1">Ký hiệu của văn bản</label>
+              <input type="text" id="codenonationInput"
+                class="w-28 px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-300" />
+            </div>
+          
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1">Trích yếu nội dung</label>
+              <textarea id="subjectInput" 
+                class="w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-all duration-300"
+                rows="4"></textarea>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+              <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-1">Năm hình thành</label>
+                  <select id="fileCatalogInput" class="w-32 px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300">
+                      <!-- Options sẽ được thêm bằng JS -->
+                  </select>
+              </div>
+      
+              <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-1">Loại văn bản</label>
+                  <select id="typenameSelect" class=" w-48 px-4 py-2 border border-gray-300 rounded-xl shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all duration-300">
+                      <option value="">Chọn loại văn bản</option>
+                  </select>
+              </div>
+      
+              <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-1">Người ký</label>
+                  <select id="singerinfoSelect" class=" w-48 px-4 py-2 border border-gray-300 rounded-xl shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all duration-300">
+                      <option value="">Chọn người ký</option>
+                  </select>
+              </div>
+      
+              <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-1">Cơ quan</label>
+                  <select id="orannameSelect" class="OranName w-48 px-4 py-2 border border-gray-300 rounded-xl shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-300">
+                      <option value="">Chọn cơ quan</option>
+                  </select>
+              </div>
+      
+              <div>
+                  <label  class="block text-sm font-semibold text-gray-700 mb-1">Trạng thái hiệu lực</label>
+                  <select id="validityStatusInput" class="w-48 px-4 py-2 border border-gray-300 rounded-xl shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-300">
+                      <option value="Đang hoạt động">Đang hoạt động</option>
+                      <option value="Đã xóa">Đã xóa</option>
+                      <option value="Chưa xác nhận">Chưa xác nhận</option>
+                  </select>
+              </div>
+          </div>
+      
+          <div class="mt-6 text-center">
+              <button type="submit" class="px-6 py-2 bg-gradient-to-r from-green-400 to-blue-500 text-white font-semibold rounded-xl shadow-lg hover:from-green-500 hover:to-blue-600 transition-all duration-300">
+                  💾 Lưu thông tin
+              </button>
+          </div>
+      </form>  
+      </div>
+  
+      <table class="table table-hover table-bordered">
+        <thead class="table-dark">
+          <tr>
+            <th>#</th>
+            <th>Tên văn bản</th>
+            <th>Ngày tải lên</th>
+            <th>Loại văn bản</th>
+            <th>Trạng thái</th>
+            <th>Thao tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="filecode"></td>
+            <td class="title"></td>
+            <td class="startdate"></td>
+            <td class="typename"></td>
+            <td class="validitystatus"></td>
+            <td>
+              <button class="btn btn-primary btn-sm"><i class="bi bi-eye-fill"></i> Xem</button>
+              <button class="btn btn-success btn-sm"><i class="fas fa-edit"></i> Sửa</button>
+              <button class="btn btn-danger btn-sm"><i class="bi bi-trash3-fill"></i> Xoá</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const select = document.getElementById('fileCatalogInput');
+      const currentYear = new Date().getFullYear();
+      for (let year = currentYear; year >= 1975; year--) {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year;
+        select.appendChild(option);
+      }
+    });
+  </script>
+  <script>
+    // Tự động cập nhật ngày hiện tại vào trường "Ngày cập nhật"
+  window.onload = function () {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    let mm = today.getMonth() + 1;
+    let dd = today.getDate();
+    if (mm < 10) mm = '0' + mm;
+    if (dd < 10) dd = '0' + dd;
+    document.getElementById('dateUpdateInput').value = `${dd}-${mm}-${yyyy}`;
+  };
+    // JavaScript để mở dropdown ở giữa trang và hiện overlay
+    document.getElementById('addDocumentButton').addEventListener('click', function () {
+      var dropdown = document.getElementById('addDocumentDropdown');
+      var overlay = document.getElementById('overlay');
+      dropdown.style.display = 'block';
+      overlay.style.display = 'block';
+    });
+
+    // Đóng dropdown và overlay khi click ngoài dropdown
+    document.getElementById('overlay').addEventListener('click', function () {
+      var dropdown = document.getElementById('addDocumentDropdown');
+      var overlay = document.getElementById('overlay');
+      dropdown.style.display = 'none';
+      overlay.style.display = 'none';
+    });
+    
+  </script>
+</body>
+</html>
+<script>
+  document.addEventListener("DOMContentLoaded", async () => {
+  const formatDate = (isoDate) => isoDate ? isoDate.split("-").reverse().join("/") : "Chưa xác định";
+  // Gửi yêu cầu API
+  const response = await fetch(`/api/danhsachvanban`);
+  const data = await response.json();
+  // Lấy tbody của bảng và làm mới nó
+  const tbody = document.querySelector("table tbody");
+  tbody.innerHTML = ""; // Xóa dữ liệu cũ trong bảng
+  
+  // Lặp qua các dữ liệu từ API và điền vào bảng
+  data.forEach((item , index) => {
+      const row = document.createElement("tr");
+      const filecodeCell = row.insertCell();
+      filecodeCell.textContent = index + 1;
+  
+      const titleCell = row.insertCell();
+      titleCell.textContent = item.title;
+  
+      const startDateCell = row.insertCell();
+      startDateCell.textContent = formatDate(item.startdate);
+  
+      const typeNameCell = row.insertCell();
+      typeNameCell.textContent = item.typename;
+  
+      const validityStatusCell = row.insertCell();
+      validityStatusCell.textContent = item.validitystatus;
+      // Thêm các ô hành động vào dòng
+      const actionsCell = row.insertCell();
+      actionsCell.innerHTML = `
+          <button class="btn btn-primary btn-sm"><i class="bi bi-eye-fill"></i> Xem</button>
+          <button class="btn btn-success btn-sm"><i class="fas fa-edit"></i> Sửa</button>
+          <button class="btn btn-danger btn-sm"><i class="bi bi-trash3-fill"></i> Xoá</button>
+      `;
+      // Thêm dòng vào tbody của bảng
+      tbody.appendChild(row);
+  });
+  });
+  </script>
+<script>
+  document.getElementById("addDocumentForm").onsubmit = async e => {
+    e.preventDefault();
+    const title = titleInput.value, 
+    startdate = startDate.value,
+    oranid = orannameSelect.value,
+    filenonation = filenonationInput.value,
+    typeid = typenameSelect.value,
+    dateupdate = dateUpdateInput.value,
+    filecatalog = fileCatalogInput.value,
+    subject = subjectInput.value,
+    codenumber = codeNumberInput.value,
+    receives = receivesInput.value,
+    validitystatus = validityStatusInput.value,
+    codenonation = codenonationInput.value,
+    posid = singerinfoSelect.value,
+    subjectEN = subjectENinput.value;
+
+    const r = await fetch("/api/admin/themvanbanmoi", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ 
+        title: title, 
+        start_date: startdate,
+        oran_id: oranid,
+        file_no_nation: filenonation ,
+        type_id: typeid,
+        date_update: dateupdate,
+        file_catalog: filecatalog,
+        subject: subject,
+        code_number: codenumber,
+        receives: receives,
+        validity_status: validitystatus,
+        code_notation: codenonation,
+        pos_id: posid,
+        subject_en: subjectEN,
+
+    })
+    });
+    alert("✅ " + await r.text());
+  };
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", async () => {
+  const { type_documents, organizations, positions } = await (await fetch("/api/admin/article")).json();
+  const createOptions = (selectElement, items, valueKey, textKey) => {
+    items.forEach(item => {
+      const option = document.createElement("option");
+      option.value = item[valueKey];
+      option.textContent = item[textKey];
+      selectElement.appendChild(option);
+    });
+  };
+  createOptions(document.querySelector("#typenameSelect"), type_documents, "typeid", "typename");
+  createOptions(document.querySelector("#orannameSelect"), organizations, "oranid", "oranname");
+  createOptions(document.querySelector("#singerinfoSelect"), positions, "posid", "singerinfo");
+});
+</script>
+  
+
+
+
+ 
+    

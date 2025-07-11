@@ -1,0 +1,43 @@
+<div class="change page active_page" id="page_first">
+    <div class="bg-gray p-1 mt-4 pl-4 shadow rounded w-[850px] h-[70px]">
+        <div class="flex space-x-2 mt-2">
+            <button class="bg-gray-200 text-gray-800 px-4 py-2 rounded item">Mục lục</button>
+            <button class="bg-red-600 text-white px-4 py-2 rounded     item">So sánh VB cũ/mới</button>
+            <button class="bg-red-600 text-white px-4 py-2 rounded     item">VB Song ngữ</button>
+            <button class="bg-gray-200 text-gray-800 px-4 py-2 rounded item">Tải về</button>
+            <button class="bg-gray-200 text-gray-800 px-4 py-2 rounded item">VB Lưu</button>
+            <button class="bg-gray-200 text-gray-800 px-4 py-2 rounded item">Theo dõi VB</button>
+            <button class="bg-gray-200 text-gray-800 px-4 py-2 rounded item">Ghi chú</button>
+        </div>
+    </div>
+    <div class="bg-white p-4 mt-4 shadow rounded w-[850px] h-[430px] overflow-y-auto">
+        <div style="height: 25px; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center;">
+                <p style="font-size: 15px; margin-right: 10px; position: relative; top: -5px;">Tình trạng hiệu lực:</p>
+                <strong><p style="font-size: 15px; top: -5px; margin-right: 10px; position: relative;" > {{ document.validitystatus }}</p></strong>
+            </div>
+            <p style="font-size: 15px; top: -5px; margin-right: 10px; position: relative;">Ghi chú</p>
+        </div>
+        <hr>
+        <br>
+        <div>
+            <div class="header-decree flex justify-between items-center">
+                <div class="w-1/2 text-center ml-[-100px]">
+                    <p class="font-bold">CHÍNH PHỦ</p>
+                    <p>______</p>
+                    Số: <span class="data-code-number"></span>/<span class="data-file-catalog"></span>/NĐ-CP
+                </div>
+                <div class="w-1/2 text-center">
+                    <p class="font-bold">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</p>
+                    <p class="header-title">Độc lập - Tự do - Hạnh phúc</p>
+                    <span class="underline"></span>
+                    <span class="data-receives"></span>,  <span class="data-start-date"></span>
+                </div>
+            </div>
+            <br>
+            <div class="content-section">
+                <p class="data-subject">Vui lòng chờ...</p>
+            </div>
+        </div>
+    </div>
+</div>

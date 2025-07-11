@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thong Ke</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+                    body { background-color: #f1f3f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .sidebar {  height: 100vh; position: fixed; width: 250px;  background-color: #212529; box-shadow: 2px 0 8px rgba(0,0,0,0.1); }
+    .sidebar h4 {  border-bottom: 1px solid #495057;}
+    .sidebar a {
+      color: #dee2e6;
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      font-weight: 500;
+      text-decoration: none;
+      transition: background 0.3s ease;
+    }
+    .sidebar a:hover {
+      background-color: #495057;
+      color: #fff;
+      cursor: pointer;
+    }
+    .sidebar i {  margin-right: 10px;}
+    .main-content {  margin-left: 250px; }
+    .table-container { background: #fff;  padding: 25px;  border-radius: 12px;  box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+    .table-scroll {
+      max-height: 600px; 
+      overflow-y: auto;  overflow-x: auto;
+    }
+    </style>
+</head>
+<body>
+    {% include "admin/sidebar.html" %}
+    <div class="main-content">
+        <div class="table-container">
+            <div class="row g-4">
+  <!-- Biểu đồ 1: Văn bản theo ngày/tháng/năm -->
+  <div class="col-md-10">
+    <canvas id="vbTheoThoiGian"></canvas>
+  </div>
+
+  <!-- Biểu đồ 2: Số lượng người dùng -->
+  <div class="col-md-6">
+    <canvas id="nguoiDungChart"></canvas>
+  </div>
+
+  <!-- Biểu đồ 3: Loại văn bản -->
+  <div class="col-md-6">
+    <canvas id="loaiVanBanChart"></canvas>
+  </div>
+
+  <!-- Biểu đồ 4: Cơ quan ban hành -->
+  <div class="col-md-6">
+    <canvas id="coQuanChart"></canvas>
+  </div>
+</div>
+
+        </div>
+    </div>
+</body>
+</html>
+<script>
+  // Biểu đồ 1: Văn bản theo ngày/tháng/năm
+  async function fetchAndRenderChart() {
+    try {
+      const res = await fetch('/api/admin/thongke');
+      const data = await res.json();
+
+      // Không cần sort nếu backend đã sắp xếp đúng
+      const labels = data.map(item => item.month);
+      const values = data.map(item => item.count);
+
+      new Chart(document.getElementById('vbTheoThoiGian'), {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Số lượng văn bản',
+            data: values,
+            borderColor: '#0d6efd',
+            backgroundColor: 'rgba(13,110,253,0.2)',
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: 'Thống kê văn bản theo tháng'
+            }
+          }
+        }
+      });
+    } catch (err) {
+      console.error('Lỗi khi tải biểu đồ:', err);
+    }
+  }
+
+  fetchAndRenderChart();
+
+  // Biểu đồ 2: Số lượng người dùng
+   async function fetchAndRenderUserRoleChart() {
+    try {
+      const response = await fetch('/api/admin/thongketaikhoan');
+      const data = await response.json();
+
+      let adminCount = 0;
+      let userCount = 0;
+
+      // Duyệt từng tài khoản để đếm số lượng
+      data.forEach(item => {
+        // Giả sử ID admin chứa từ 'admin' hoặc bắt đầu bằng 'AD' (bạn có thể điều chỉnh)
+        if (item.id.toLowerCase().includes('admin') || item.id.toUpperCase().startsWith('AD')) {
+          adminCount++;
+        } else {
+          userCount++;
+        }
+      });
+
+      // Vẽ biểu đồ
+      new Chart(document.getElementById('nguoiDungChart'), {
+        type: 'doughnut',
+        data: {
+          labels: ['Admin', 'Người dùng'],
+          datasets: [{
+            label: 'Người dùng',
+            data: [adminCount, userCount],
+            backgroundColor: ['#198754', '#ffc107']
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: { display: true, text: 'Số lượng người dùng theo vai trò' }
+          }
+        }
+      });
+
+    } catch (error) {
+      console.error('Lỗi khi gọi API hoặc vẽ biểu đồ:', error);
+    }
+  }
+
+  // Gọi hàm khi trang tải
+  fetchAndRenderUserRoleChart();
+
+  // Biểu đồ 3: Loại văn bản
+  async function loadLoaiVanBanChart() {
+    try {
+      const response = await fetch('/api/admin/thongkeloaivanban');
+      if (!response.ok) throw new Error('Lỗi khi gọi API');
+
+      const data = await response.json();
+
+      // Tạo mảng labels và data từ API trả về
+      const labels = data.map(item => item.typename);
+      const counts = data.map(item => item.totaltitle);
+
+      new Chart(document.getElementById('loaiVanBanChart'), {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Số lượng loại văn bản',
+            data: counts,
+            backgroundColor: '#6610f2'
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: 'Thống kê theo loại văn bản'
+            }
+          }
+        }
+      });
+
+    } catch (error) {
+      console.error('Lỗi khi tải dữ liệu biểu đồ:', error);
+    }
+  }
+
+  // Gọi hàm khi trang load xong
+   loadLoaiVanBanChart();
+
+
+  // Biểu đồ 4: Cơ quan ban hành
+  async function loadCoQuanChart() {
+    try {
+      const response = await fetch('/api/admin/thongkecoquan');
+      if (!response.ok) throw new Error('Lỗi khi gọi API');
+
+      const data = await response.json();
+
+      const labels = data.map(item => item.oranname);
+      const counts = data.map(item => item.totaltitle);
+
+      // Màu sắc cho từng cơ quan (tạo màu động nếu cần)
+      const backgroundColors = [
+        '#0dcaf0', '#fd7e14', '#20c997', '#6f42c1', '#ffc107', '#dc3545'
+      ];
+
+      new Chart(document.getElementById('coQuanChart'), {
+        type: 'pie',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Số lượng văn bản',
+            data: counts,
+            backgroundColor: backgroundColors.slice(0, labels.length)
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: 'Thống kê theo cơ quan ban hành'
+            }
+          }
+        }
+      });
+
+    } catch (error) {
+      console.error('Lỗi khi tải dữ liệu biểu đồ:', error);
+    }
+  }
+
+  loadCoQuanChart();
+</script>

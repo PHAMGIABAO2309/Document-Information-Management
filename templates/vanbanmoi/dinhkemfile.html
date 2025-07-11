@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Xem File DOCX</title>
+    <script src="https://unpkg.com/mammoth/mammoth.browser.min.js"></script>
+    <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.179/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.179/pdf.worker.min.js"></script>
+   
+</head>
+<body>
+
+    <button id="btn-back" onclick="history.back()">⬅ Quay lại</button>
+    <div id="page-count">Đang kiểm tra số trang...</div>
+    <div id="docx-viewer">Đang tải file...</div>
+    <div id="pdf-viewer"></div>
+
+   <script>
+    const params = new URLSearchParams(window.location.search);
+    const filePath = params.get("path");
+
+    function getFileExtension(path) {
+        return path.split('.').pop().toLowerCase();
+    }
+
+    async function renderDocxFromPath() {
+        const viewer = document.getElementById("docx-viewer");
+        const counter = document.getElementById("page-count");
+
+        try {
+            const res = await fetch(`/${filePath}`);
+            if (!res.ok) throw new Error("Không tải được file DOCX!");
+
+            const arrayBuffer = await res.arrayBuffer();
+            const { value: htmlContent } = await mammoth.convertToHtml({ arrayBuffer });
+
+            viewer.innerHTML = htmlContent;
+
+            // Ước lượng số trang dựa vào độ dài
+            const plainText = viewer.innerText;
+            const charsPerPage = 1800; // Ước lượng 1 trang A4 khoảng 1800 ký tự
+            const estimatedPages = Math.max(1, Math.round(plainText.length / charsPerPage));
+            counter.innerText = `Số trang ước lượng (DOCX): ${estimatedPages}`;
+        } catch (err) {
+            viewer.innerText = "Lỗi khi đọc file DOCX: " + err.message;
+            document.getElementById("page-count").innerText = "";
+        }
+    }
+
+    async function renderPDF() {
+        const pdfViewer = document.getElementById("pdf-viewer");
+        const counter = document.getElementById("page-count");
+
+        if (!filePath) {
+            pdfViewer.innerText = "Không tìm thấy file!";
+            return;
+        }
+
+        try {
+            const loadingTask = pdfjsLib.getDocument(`/${filePath}`);
+            const pdf = await loadingTask.promise;
+
+            pdfViewer.innerHTML = '';
+            counter.innerText = `Số trang PDF: ${pdf.numPages}`;
+
+            for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                const page = await pdf.getPage(pageNum);
+                const viewport = page.getViewport({ scale: 1.5 });
+
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+
+                pdfViewer.appendChild(canvas);
+
+                await page.render({ canvasContext: context, viewport }).promise;
+            }
+        } catch (err) {
+            pdfViewer.innerText = "Lỗi khi tải file PDF: " + err.message;
+        }
+    }
+
+    // Kiểm tra đuôi file và gọi hàm tương ứng
+    if (filePath) {
+        const ext = getFileExtension(filePath);
+
+        if (ext === "docx") {
+            document.getElementById("pdf-viewer").style.display = "none";
+            renderDocxFromPath();
+        } else if (ext === "pdf") {
+            document.getElementById("docx-viewer").style.display = "none";
+            renderPDF();
+        } else {
+            document.getElementById("docx-viewer").innerText = "Không tồn tại file!";
+            document.getElementById("pdf-viewer").style.display = "none";
+            document.getElementById("page-count").innerText = "";
+        }
+    }
+</script>
+</body>
+</html>
+<script src="/static/js/api_TrangChuu.js"></script>
+ <style>
+body {
+    background: black;
+    margin: 0;
+    padding: 2em 0;
+}
+
+#docx-viewer {
+    font-family: "Times New Roman", serif;
+    font-size: 14pt;
+    line-height: 1.5;
+    background: white;
+    color: #000;
+    max-width: 794px; /* gần bằng khổ A4 */
+    margin: 0 auto;
+    padding: 2cm;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    white-space: normal;
+}
+
+#docx-viewer h1, h2, h3, h4 {
+    font-weight: bold;
+    margin: 1em 0 0.5em;
+}
+
+#docx-viewer p {
+    margin: 0.5em 0;
+    text-align: justify;
+}
+
+#docx-viewer strong {
+    font-weight: bold;
+}
+
+#docx-viewer em {
+    font-style: italic;
+}
+
+#docx-viewer ul, #docx-viewer ol {
+    margin: 1em 2em;
+}
+
+#docx-viewer table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1em 0;
+}
+
+#docx-viewer th, #docx-viewer td {
+    border: 1px solid #000;
+    padding: 8px;
+    text-align: left;
+}
+
+#docx-viewer img {
+    max-width: 100%;
+    height: auto;
+}
+
+button {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    font-size: 14pt;
+    cursor: pointer;
+}
+       /* Căn giữa nội dung theo chiều dọc và điều chỉnh khung bảng */
+#docx-viewer table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1em 0;
+    table-layout: fixed;
+}
+
+#docx-viewer th, 
+#docx-viewer td {
+    border: 1px solid #000;
+    padding: 8px;
+    vertical-align: middle; /* canh giữa theo chiều dọc */
+}
+
+/* Nếu có 2 cột: bên trái căn trái, bên phải căn giữa */
+#docx-viewer td:first-child {
+    text-align: left;
+}
+
+#docx-viewer td:last-child {
+    text-align: center;
+}
+#btn-back {
+    position: fixed;
+    top: 20px;
+    right: 30px;
+    padding: 10px 20px;
+    font-size: 14pt;
+    cursor: pointer;
+    background: linear-gradient(45deg, #6a11cb, #2575fc);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    box-shadow: 0 4px 15px rgba(101, 41, 255, 0.6);
+    transition: all 0.4s ease;
+    z-index: 1000;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
+}
+
+#btn-back:hover {
+    background: linear-gradient(45deg, #2575fc, #6a11cb);
+    box-shadow: 0 0 20px 5px rgba(101, 41, 255, 0.8), 0 0 30px 10px rgba(101, 41, 255, 0.5);
+    color: #fff;
+    transform: scale(1.05);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 1);
+}
+
+#pdf-viewer canvas {
+            border: 1px solid black;
+            display: block;
+            margin: 10px auto;
+        }
+#page-count {
+        color: white;
+        text-align: center;
+        font-size: 18pt;
+        margin-bottom: 1em;
+}
+
+</style>

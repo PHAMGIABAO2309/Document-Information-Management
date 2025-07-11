@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nhập Mật Khẩu Mới</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .verify-container {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+      padding: 40px 30px;
+      width: 400px;
+      transition: 0.4s;
+    }
+
+    .verify-container h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 30px;
+      font-size: 28px;
+    }
+
+    label {
+      font-weight: 500;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .input-container {
+      position: relative;
+      width: 100%;
+      margin: 10px 0 20px;
+    }
+
+    .input-container .icon {
+      position: absolute;
+      top: 43%;
+      left: 15px;
+      transform: translateY(-50%);
+      color: #6a11cb;
+      font-size: 18px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 15px 12px 45px;
+      border: none;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.8);
+      outline: none;
+      font-size: 14px;
+      box-sizing: border-box;
+      transition: 0.3s;
+    }
+
+    input:focus {
+      background: rgba(255, 255, 255, 1);
+      box-shadow: 0 0 8px #74ebd5;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: linear-gradient(135deg, #2575fc, #6a11cb);
+      box-shadow: 0 4px 15px rgba(106, 17, 203, 0.5);
+    }
+
+    .back-forgot {
+      margin-top: 15px;
+      text-align: center;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .back-forgot a {
+      color: #6a11cb;
+      text-decoration: none;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .back-forgot a:hover {
+      text-decoration: underline;
+    }
+     #emailOrPhoneInput,
+  label[for="emailOrPhoneInput"],
+  label:has(+ #emailOrPhoneInput) {
+    display: none;
+  }
+  </style>
+</head>
+<body>
+  <div class="verify-container">
+    <h2>Nhập Mật Khẩu Mới</h2>
+    <form id="updatePasswordForm"> 
+  <label>Email hoặc Số điện thoại</label>
+  <input type="text" id="emailOrPhoneInput" name="emailOrPhone" readonly />
+  
+  <label>Mật khẩu mới</label>
+  <div class="input-container">
+    <i class="fas fa-lock icon"></i>
+    <input type="password" name="newPassword" placeholder="Nhập mật khẩu mới" required />
+  </div>
+  
+  <button type="submit">Cập Nhật</button>
+  
+  <div id="message" style="margin-top:10px;"></div>
+</form>
+    <p class="back-forgot">Quay lại <a href="/quenmatkhau">quên mật khẩu</a></p>
+  </div>
+</body>
+</html>
+ <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('Đã vào trang xác nhận, lấy localStorage:', localStorage.getItem('emailOrPhone'));
+      const emailOrPhone = localStorage.getItem('emailOrPhone');
+      if (emailOrPhone) {
+        document.getElementById('emailOrPhoneInput').value = emailOrPhone;
+      }
+    });
+     const form = document.getElementById('updatePasswordForm');
+  const messageDiv = document.getElementById('message');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const emailOrPhone = form.emailOrPhone.value.trim();
+    const newPassword = form.newPassword.value;
+    if (!newPassword) {
+      messageDiv.style.color = 'red';
+      messageDiv.textContent = 'Vui lòng nhập mật khẩu mới.';
+      return;
+    }
+
+    // Disable button để tránh gửi nhiều lần
+    const submitBtn = form.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+
+    try {
+      const response = await fetch('/api/capnhatmatkhau', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email_or_phone: emailOrPhone, new_password: newPassword })
+      });
+
+      const result = await response.json();
+
+      if (result.status === 'success') {
+        messageDiv.style.color = 'green';
+        messageDiv.textContent = result.message || 'Cập nhật mật khẩu thành công!';
+        form.reset();
+        // Giữ lại email hoặc số điện thoại trong input readonly
+        document.getElementById('emailOrPhoneInput').value = emailOrPhone;
+        setTimeout(() => {
+    window.location.href = '/login';
+  }, 2000);
+      } else {
+        messageDiv.style.color = 'red';
+        messageDiv.textContent = result.message || 'Có lỗi xảy ra';
+      }
+    } catch (error) {
+      messageDiv.style.color = 'red';
+      messageDiv.textContent = 'Lỗi kết nối server';
+    } finally {
+      submitBtn.disabled = false;
+    }
+  });
+  </script>
+

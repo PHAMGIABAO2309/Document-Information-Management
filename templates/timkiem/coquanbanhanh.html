@@ -1,0 +1,45 @@
+<div class="relative">
+    <input type="text" id="selectCoQuanBanHanh" placeholder="Cơ quan ban hành" class="z-10 border border-gray-300 rounded px-3 py-2 w-full cursor-pointer appearance-none bg-white focus:outline-none placeholder:text-black font-normal" readonly>
+    <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">▼</div>
+    <div id="dropdownCoQuanBanHanh" class="absolute w-64 hidden z-10 bg-white  z-10">
+        <input id="searchCoQuanBanHanh" type="text" placeholder="Tìm kiếm cơ quan ban hành..." class="w-full px-4 py-2 border border-gray-300 rounded z-10">
+        <div class="absolute w-full mt-1 bg-white border border-gray-300 rounded shadow-lg max-h-60 overflow-y-auto mt-[-1px]">
+            <ul id="listCoQuanBanHanh" class="py-1">
+                <!-- Dữ liệu sẽ được thêm động bằng JavaScript -->
+            </ul>
+        </div>
+    </div>
+</div>
+<!-- tim theo co quan ban hanh -->
+<script>
+    document.addEventListener("DOMContentLoaded", async () => {
+        const [data, list, input, selectCQ, dropdownCQ, dropdownLV, selectLV] = await Promise.all([
+            fetch("/api/thuoctinhvanban").then(res => res.json()),
+            ...["listCoQuanBanHanh", "searchCoQuanBanHanh", "selectCoQuanBanHanh", "dropdownCoQuanBanHanh", "dropdownLoaiVanBan", "selectLoaiVanBan"]
+                .map(id => document.getElementById(id))
+        ]);
+        const render = d => {
+            list.innerHTML = `<li class="px-4 py-2 hover:bg-gray-100 cursor-pointer " data-value="all">Tất cả</li>` +
+                d.organizations.map(i => 
+                    `<li class="px-4 py-2 hover:bg-gray-100 cursor-pointer" data-value="${i.oranname}">${i.oranname}</li>`
+                ).join('');
+            list.addEventListener('click', function (e) {
+                if (e.target && e.target.matches("li[data-value]")) {
+                    const value = e.target.getAttribute("data-value");
+                    window.location.href = `/tracuu?oranname=${encodeURIComponent(value)}`;
+                }
+            });
+        };
+        render(data);
+        input.addEventListener("input", () => render({ organizations: data.organizations.filter(i => i.oranname.toLowerCase().includes(input.value.toLowerCase().trim())) }));
+        selectCQ.onclick = () => {
+            dropdownCQ.style.top = selectCQ.offsetTop + selectCQ.offsetHeight + "px";
+            dropdownCQ.style.left = selectCQ.offsetLeft + "px";
+            dropdownCQ.classList.toggle("hidden");
+        };
+        document.onclick = e => {
+            if (!selectCQ.contains(e.target) && !dropdownCQ.contains(e.target))
+                dropdownCQ.classList.add("hidden");
+        };
+    });
+</script>

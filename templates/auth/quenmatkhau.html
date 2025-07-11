@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quên Mật Khẩu</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .forgot-container {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+      padding: 40px 30px;
+      width: 400px;
+      transition: 0.4s;
+    }
+
+    .forgot-container h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 30px;
+      font-size: 28px;
+    }
+
+    label {
+      font-weight: 500;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .input-container {
+      position: relative;
+      width: 100%;
+      margin: 10px 0 20px;
+    }
+
+    .input-container .icon {
+      position: absolute;
+      top: 43%;
+      left: 15px;
+      transform: translateY(-50%);
+      color: #6a11cb;
+      font-size: 18px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 15px 12px 45px;
+      border: none;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.8);
+      outline: none;
+      font-size: 14px;
+      box-sizing: border-box;
+      transition: 0.3s;
+    }
+
+    input:focus {
+      background: rgba(255, 255, 255, 1);
+      box-shadow: 0 0 8px #74ebd5;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: linear-gradient(135deg, #2575fc, #6a11cb);
+      box-shadow: 0 4px 15px rgba(106, 17, 203, 0.5);
+    }
+
+    .back-login {
+      margin-top: 15px;
+      text-align: center;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .back-login a {
+      color: #6a11cb;
+      text-decoration: none;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .back-login a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="forgot-container">
+    <h2>Quên Mật Khẩu</h2>
+    <form  method="GET" id="quen-form">
+      <label>Nhập Email hoặc Số điện thoại</label>
+      <div class="input-container">
+        <i class="fas fa-envelope icon"></i>
+        <input type="text" id="emailOrPhone" name="emailOrPhone" placeholder="Nhập email hoặc số điện thoại" required />
+      </div>
+      <div id="error-message" style="color: red; margin-top: 5px;"></div>
+      <button type="submit">Gửi Yêu Cầu</button>
+    </form>
+    <p class="back-login">Quay lại <a href="/login">đăng nhập</a></p>
+  </div>
+</body>
+</html>
+
+<script>
+document.getElementById('quen-form').addEventListener('submit', async function(event) {
+  event.preventDefault();
+
+  const input = document.getElementById('emailOrPhone');
+  const errorDiv = document.getElementById('error-message');
+  errorDiv.textContent = '';
+
+  const data = {
+    email_or_phone: input.value.trim()
+  };
+
+  try {
+    const response = await fetch('/api/quenmatkhau', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+
+    const result = await response.json();
+
+    if (result.status === 'error') {
+        errorDiv.textContent = result.message;
+    } else {
+        console.log('Lưu vào localStorage:', input.value.trim());
+        localStorage.setItem('emailOrPhone', input.value.trim());
+         Swal.fire({
+            title: 'Thành công!',
+            text: 'Yêu cầu được gửi thành công! Vui lòng nhập mật khẩu mới của bạn.',
+            icon: 'success',
+            showConfirmButton: true, 
+            timer: 2000, 
+            timerProgressBar: true 
+        });
+
+        setTimeout(() => {
+            window.location.href = '/xacnhanmatkhau';
+        }, 2000);
+            }
+
+        } catch (err) {
+            errorDiv.textContent = 'Lỗi mạng hoặc server.';
+            console.error(err);
+        }
+        });
+</script>

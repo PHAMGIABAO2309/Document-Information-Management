@@ -1,0 +1,104 @@
+<div class="overlay_chitiet" id="formOverlay_chitiet"></div>
+<form class="position-fixed top-50 start-50 translate-middle bg-white p-4 rounded shadow-lg d-none" id="addDocumentForm_chitiet" style="min-width: 320px; background: linear-gradient(135deg, #f0f4f8, #d9e2ec); border: none;">
+    <div class="p-3 rounded-4" style="background: white; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);">
+      <button type="button" class="btn-close position-absolute top-0 end-0 m-3" id="closeFormBtn_chitiet" aria-label="Close"></button>
+        <h5 class="mb-4 text-center text-primary fw-bold" style="font-family: 'Poppins', sans-serif;">Chi tiết văn bản</h5>
+        <div class="mb-2 d-flex align-items-center">
+            <p class="mb-0 text-secondary" style="font-size: 0.9rem; min-width: 80px;"><b>Tên văn bản:</b></p>
+            <span id="titleDetails"  class="d-block text-dark fw-semibold  ml-2" style="font-size: 1rem;"></span>
+        </div>
+        <div class="mb-2 d-flex align-items-center">
+            <p class="mb-0 text-secondary" style="font-size: 0.9rem; min-width: 80px"><b>Ngày tải lên:</b></p>
+            <span id="startdateDetails"  class="d-block text-dark fw-semibold ml-2" style="font-size: 1rem;"></span>
+        </div>
+        <div class="mb-2 d-flex align-items-center">
+            <p class="mb-0 text-secondary" style="font-size: 0.9rem; min-width: 80px"><b>Loại văn bản:</b></p>
+            <span id="typenameDetails"  class="d-block text-dark fw-semibold ml-2" style="font-size: 1rem;"></span>
+        </div>
+        <div class="mb-2 d-flex align-items-center">
+            <p class="mb-0 text-secondary" style="font-size: 0.9rem; min-width: 80px"><b>Tệp:</b></p>
+            <span id="filedinhkem"  style="font-size: 1rem;">
+              <a href="" class="path attachment flex items-center ml-2 text-blue-900 underline text-gray-500 text-sm hover:text-blue-600 cursor-pointer hover:underline">
+                  <i class="fas fa-paperclip mr-1"></i>
+                  File đính kèm
+              </a>
+            </span>
+        </div>
+        <div class="text-center">
+            <button class="btn btn-primary rounded-pill px-4 py-2 fw-bold" id="closeDropdown" style="transition: 0.3s;">
+                <i class="bi bi-x-circle me-2"></i> Đóng
+            </button>
+        </div>
+    </div>
+</form>
+
+
+ <script>
+    let currentFileCode = null;
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("addDocumentForm_chitiet");
+        const overlay = document.getElementById("formOverlay_chitiet");
+        const closeBtn = document.getElementById("closeFormBtn_chitiet");
+        const closeDropdownBtn = document.getElementById("closeDropdown");
+
+        // Hàm mở form
+        function openForm(title, startdate, typename,filecode) {
+            document.getElementById("titleDetails").textContent = title;
+            document.getElementById("startdateDetails").textContent = startdate;
+            document.getElementById("typenameDetails").textContent = typename;
+            currentFileCode = filecode; // Lưu lại filecode của văn bản đang xem
+
+            // Hiện form và overlay
+            document.getElementById("addDocumentForm_chitiet").classList.remove("d-none");
+            document.getElementById("formOverlay_chitiet").style.display = "block";
+        }
+
+
+        // Lắng nghe sự kiện click nút "Xem"
+        document.body.addEventListener("click", function (e) {
+            if (e.target.closest(".btn-view-document")) {
+            const btn = e.target.closest(".btn-view-document");
+            const title = btn.getAttribute("data-title");
+            const startdate = btn.getAttribute("data-startdate");
+            const typename = btn.getAttribute("data-typename");
+            const filecode = btn.getAttribute("data-filecode");
+            openForm(title, startdate, typename, filecode);
+            }
+        });
+
+        // Đóng form
+        function closeForms() {
+            form.classList.add("d-none");
+            overlay.style.display = "none";
+        }
+
+        overlay.addEventListener("click", closeForms);
+        closeBtn.addEventListener("click", closeForms);
+        closeDropdownBtn.addEventListener("click", function (e) {
+            e.preventDefault();
+            closeForms();
+        });
+
+        document.querySelector(".attachment").addEventListener("click", async function (e) {
+            e.preventDefault();
+            if (!currentFileCode) {
+                alert("Không tìm thấy mã file!");
+                return;
+            }
+            try {
+                let res = await fetch(`/api/dinhkemfile?file_code=${currentFileCode}`);
+                let data = await res.json();
+
+                if (data.length > 0 && data[0].path) {
+                const filePath = data[0].path;
+                window.location.href = `/path?path=${encodeURIComponent(filePath)}`;
+                } else {
+                alert("Không tìm thấy file đính kèm!");
+                }
+            } catch (err) {
+                console.error("Lỗi khi tải file đính kèm:", err);
+                alert("Có lỗi xảy ra khi tải file!");
+            }
+        });
+    });
+</script>

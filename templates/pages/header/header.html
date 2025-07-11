@@ -1,0 +1,49 @@
+<header class="bg-white shadow">
+    <div class="container mx-auto flex justify-between items-center py-4 px-6">
+        <div class="flex items-center">
+            <img alt="LuatVietnam logo" class="h-10" height="300" width="50" src="https://th.bing.com/th/id/OIP.-_GKfmytz61oq-HnVMf0NQHaHa?rs=1&pid=ImgDetMain" />
+            <span class="ml-2 text-sm text-gray-600">Tiện ích văn bản luật</span>
+        </div>
+        <div class="flex items-center space-x-4">
+            <button class="text-gray-600"></button>
+            <span class="text-red-600"></span>
+            <button class="text-gray-600"></button>
+            <button class="text-gray-600"></button>
+            <div id="user-name" class="text-xl font-semibold text-red-800 text-center"></div>
+
+            <div class="flex">
+                <button id="logout-btn" class="text-gray-600 hover:text-orange-600" style="display:none;">Đăng xuất</button>
+                <a href="/login" id="login-btn" class="text-gray-600 hover:text-orange-600">Đăng nhập</a>
+                <span id="chia">/</span>
+                <a href="/register" id="signup-btn" class="text-gray-600 hover:text-orange-600">Đăng ký</a>
+            </div>
+            <script>
+                const user = JSON.parse(localStorage.getItem('user'));
+                if (user) {
+                    document.getElementById('user-name').textContent = ` ${user.fullname}`;
+                    document.getElementById('login-btn').style.display = 'none';
+                    document.getElementById('signup-btn').style.display = 'none';
+                    document.getElementById('chia').style.display = 'none';
+                    document.getElementById('logout-btn').style.display = 'inline-block';
+                    document.getElementById('logout-btn').onclick = () => { localStorage.removeItem('user'); window.location.href = '/login'; };
+                }
+            </script>
+        </div>
+    </div>
+</header>
+<nav class="bg-gray-50 shadow">
+    <div class="container mx-auto flex justify-between items-center py-2 px-6">
+        <div class="flex space-x-4">
+            <a class="text-gray-600 hover:text-gray-800" href="javascript:void(0);" onclick="window.location.href='/trangchu'"><i class="fas fa-home"></i> Văn bản mới</a>
+            <a class="text-gray-600 hover:text-gray-800" href="javascript:void(0);" onclick="window.location.href='/tracuu'">Tra cứu văn bản</a>
+            <a class="text-gray-600 hover:text-gray-800" href=""> Dự thảo </a>
+            <a class="text-gray-600 hover:text-gray-800" href="">Tin văn bản mới</a>
+            <a class="text-gray-600 hover:text-gray-800" href="">Tin pháp luật</a>
+            <a class="text-gray-600 hover:text-gray-800" href="">Bản tin luật</a>
+            <a class="text-gray-600 hover:text-gray-800" href="">Luật sư tư vấn</a>
+            <a class="text-gray-600 hover:text-gray-800" href="">Pháp lý doanh nghiệp</a>
+            <a class="text-gray-600 hover:text-gray-800" href=""> Tiện ích </a>
+        </div>
+        <button class="text-gray-600"><i class="fas fa-bars"> </i></button>
+    </div>
+</nav>
