@@ -23,8 +23,9 @@ FROM  files f
 LEFT JOIN  type_documents td ON f.TypeId = td.TypeId
 LEFT JOIN  organization org ON f.OranId = org.OranId
 LEFT JOIN  infomation_documents_out ido ON ido.FileCode = f.FileCode
-LEFT JOIN  positions p                  ON ido.PosId = p.PosId
-AND ido.TypeId = f.TypeId;
+LEFT JOIN  positions p ON ido.PosId = p.PosId AND ido.TypeId = f.TypeId
+ORDER BY CAST(SUBSTRING(f.FileCode, 3) AS UNSIGNED);
+
 "
     )
     .fetch_all(db_pool.get_ref())
